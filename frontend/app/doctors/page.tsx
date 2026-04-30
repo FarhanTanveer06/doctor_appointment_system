@@ -7,13 +7,43 @@ import api from '@/lib/api';
 
 const specialties = [
   'All',
-  'General Physician',
-  'Dermatologist',
-  'Pediatrician',
-  'Neurologist',
+  'Cardiac Surgeon',
+  'Cardiologist (Heart Specialist)',
+  'Chest Specialist (Pulmonologist)',
   'Gastroenterologist',
-  'Cardiologist',
+  'Neurologist',
+  'Neurosurgeon',
+  'Orthopedic Surgeon (Bone Specialist)',
+  'General Surgeon',
+  'Urologist',
+  'Nephrologist (Kidney Specialist)',
+  'Endocrinologist (Diabetes & Hormone Specialist)',
+  'Dermatologist (Skin Specialist)',
+  'Venereologist (Skin & Sexual Diseases)',
+  'Gynecologist & Obstetrician',
+  'Pediatrician (Child Specialist)',
+  'Neonatologist (Newborn Specialist)',
+  'Oncologist (Cancer Specialist)',
+  'Hematologist (Blood Specialist)',
+  'Rheumatologist (Joint & Autoimmune Specialist)',
+  'Ophthalmologist (Eye Specialist)',
+  'ENT Specialist (Ear, Nose, Throat)',
+  'Psychiatrist (Mental Health Specialist)',
+  'Radiologist (Imaging Specialist)',
+  'Pathologist (Lab Diagnosis Specialist)',
+  'Anesthesiologist',
+  'Critical Care Specialist (ICU)',
+  'Emergency Medicine Specialist',
+  'Physical Medicine & Rehabilitation Specialist',
+  'Pain Management Specialist',
+  'Plastic & Reconstructive Surgeon',
+  'Vascular Surgeon',
+  'Family Medicine Specialist',
+  'Public Health Specialist',
 ];
+
+const searchTypes = ['All', 'Doctor', 'Hospital'];
+const genders = ['All', 'Male', 'Female'];
 
 interface Doctor {
   id: number;
@@ -24,6 +54,7 @@ interface Doctor {
   fees: number;
   available_days: string;
   image: string;
+  gender?: string;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';
@@ -34,17 +65,36 @@ function DoctorsContent() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSpecialty, setSelectedSpecialty] = useState(searchParams.get('specialty') || 'All');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [gender, setGender] = useState(searchParams.get('gender') || 'All');
+  const [searchType, setSearchType] = useState(searchParams.get('type') || 'All');
 
   useEffect(() => {
     fetchDoctors();
-  }, [selectedSpecialty]);
+  }, [selectedSpecialty, searchQuery, gender]);
 
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const params = selectedSpecialty !== 'All' ? { specialty: selectedSpecialty } : {};
+      const params: any = {};
+      if (selectedSpecialty !== 'All') params.specialty = selectedSpecialty;
+      if (searchQuery) params.q = searchQuery;
+      if (gender !== 'All') params.gender = gender;
+      
       const res = await api.get('/doctors', { params });
-      setDoctors(res.data);
+      let filteredDoctors = res.data;
+      
+      // Client-side filtering for search query
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filteredDoctors = filteredDoctors.filter((d: Doctor) => 
+          d.name?.toLowerCase().includes(query) ||
+          d.specialty?.toLowerCase().includes(query) ||
+          d.qualifications?.toLowerCase().includes(query)
+        );
+      }
+      
+      setDoctors(filteredDoctors);
     } catch (error) {
       console.error('Failed to fetch doctors', error);
     } finally {
@@ -54,17 +104,29 @@ function DoctorsContent() {
 
   const handleSpecialtyChange = (specialty: string) => {
     setSelectedSpecialty(specialty);
-    if (specialty === 'All') {
-      router.push('/doctors');
-    } else {
-      router.push(`/doctors?specialty=${encodeURIComponent(specialty)}`);
-    }
+    updateURL(specialty, searchQuery, gender);
+  };
+
+  const handleSearch = () => {
+    updateURL(selectedSpecialty, searchQuery, gender);
+  };
+
+  const handleGenderChange = (g: string) => {
+    setGender(g);
+    updateURL(selectedSpecialty, searchQuery, g);
+  };
+
+  const updateURL = (specialty: string, query: string, g: string) => {
+    const params = new URLSearchParams();
+    if (specialty && specialty !== 'All') params.set('specialty', specialty);
+    if (query) params.set('q', query);
+    if (g && g !== 'All') params.set('gender', g);
+    router.push(`/doctors?${params.toString()}`);
   };
 
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return null;
     if (imagePath.startsWith('http')) return imagePath;
-    // Remove /api from API_URL for static files
     const baseUrl = API_URL.replace('/api', '');
     return `${baseUrl}${imagePath}`;
   };
@@ -72,27 +134,69 @@ function DoctorsContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-8 text-center">All Doctors</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center">Find Doctor</h1>
 
-        {/* Specialty Filter */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold mb-4">Filter by Specialty:</h3>
-          <div className="flex flex-wrap gap-2">
-            {specialties.map((specialty) => (
-              <button
-                key={specialty}
-                onClick={() => handleSpecialtyChange(specialty)}
-                className={`px-4 py-2 rounded-full font-medium transition ${
-                  selectedSpecialty === specialty
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border hover:bg-gray-100'
-                }`}
-              >
-                {specialty}
-              </button>
-            ))}
+        {/* Search Bar */}
+        <div className="bg-white rounded-lg shadow-md p-4 mb-8">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            {/* Search Type Dropdown */}
+            <select
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {searchTypes.map((type) => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+
+            {/* Search Input */}
+            <input
+              type="text"
+              placeholder="Search doctor name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            {/* Search Button */}
+            <button
+              onClick={handleSearch}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
+              Search
+            </button>
+          </div>
+
+          {/* Filters Row */}
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Gender Dropdown */}
+            <select
+              value={gender}
+              onChange={(e) => handleGenderChange(e.target.value)}
+              className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {genders.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+
+            {/* Specialty Dropdown */}
+            <select
+              value={selectedSpecialty}
+              onChange={(e) => handleSpecialtyChange(e.target.value)}
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {specialties.map((specialty) => (
+                <option key={specialty} value={specialty}>{specialty}</option>
+              ))}
+            </select>
           </div>
         </div>
+
+        {/* Results Count */}
+        <p className="text-gray-600 mb-4">{doctors.length} doctors found</p>
 
         {/* Doctors List */}
         {loading ? (

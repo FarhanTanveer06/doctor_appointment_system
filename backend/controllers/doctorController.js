@@ -27,9 +27,9 @@ const getDoctorById = async (req, res) => {
 
 const addDoctor = async (req, res) => {
   try {
-    const { userId, specialty, qualifications, fees, availableDays } = req.body;
+    const { userId, specialty, qualifications, fees, availableDays, gender } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
-    const id = await Doctor.create(userId, specialty, qualifications, fees, availableDays, image);
+    const id = await Doctor.create(userId, specialty, qualifications, fees, availableDays, image, gender);
     res.status(201).json({ message: 'Doctor added', id, image });
   } catch (error) {
     console.error('AddDoctor error:', error);
@@ -67,7 +67,7 @@ const updateDoctorImage = async (req, res) => {
 
 const updateDoctorProfile = async (req, res) => {
   try {
-    const { specialty, qualifications, fees, availableDays, name, email } = req.body;
+    const { specialty, qualifications, fees, availableDays, name, email, gender } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
     
     // Get doctor by user_id from auth middleware
@@ -77,7 +77,7 @@ const updateDoctorProfile = async (req, res) => {
     }
     
     // Update doctor details
-    await Doctor.update(doctor.id, specialty, qualifications, fees, availableDays, image);
+    await Doctor.update(doctor.id, specialty, qualifications, fees, availableDays, image, gender);
     
     // Update user name and email if provided
     if (name || email) {

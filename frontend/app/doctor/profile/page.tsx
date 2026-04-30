@@ -14,22 +14,48 @@ interface DoctorProfile {
   fees: number;
   available_days: string;
   image: string;
+  gender?: string;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';
 
 const specialties = [
-  'General Physician',
-  'Dermatologist',
-  'Pediatrician',
-  'Neurologist',
+  'Cardiac Surgeon',
+  'Cardiologist (Heart Specialist)',
+  'Chest Specialist (Pulmonologist)',
   'Gastroenterologist',
-  'Cardiologist',
-  'Orthopedic',
-  'Ophthalmologist',
-  'ENT Specialist',
-  'Psychiatrist',
+  'Neurologist',
+  'Neurosurgeon',
+  'Orthopedic Surgeon (Bone Specialist)',
+  'General Surgeon',
+  'Urologist',
+  'Nephrologist (Kidney Specialist)',
+  'Endocrinologist (Diabetes & Hormone Specialist)',
+  'Dermatologist (Skin Specialist)',
+  'Venereologist (Skin & Sexual Diseases)',
+  'Gynecologist & Obstetrician',
+  'Pediatrician (Child Specialist)',
+  'Neonatologist (Newborn Specialist)',
+  'Oncologist (Cancer Specialist)',
+  'Hematologist (Blood Specialist)',
+  'Rheumatologist (Joint & Autoimmune Specialist)',
+  'Ophthalmologist (Eye Specialist)',
+  'ENT Specialist (Ear, Nose, Throat)',
+  'Psychiatrist (Mental Health Specialist)',
+  'Radiologist (Imaging Specialist)',
+  'Pathologist (Lab Diagnosis Specialist)',
+  'Anesthesiologist',
+  'Critical Care Specialist (ICU)',
+  'Emergency Medicine Specialist',
+  'Physical Medicine & Rehabilitation Specialist',
+  'Pain Management Specialist',
+  'Plastic & Reconstructive Surgeon',
+  'Vascular Surgeon',
+  'Family Medicine Specialist',
+  'Public Health Specialist',
 ];
+
+const genders = ['Male', 'Female'];
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -48,6 +74,7 @@ export default function DoctorProfilePage() {
     qualifications: '',
     fees: 0,
     available_days: [] as string[],
+    gender: 'Male',
     image: null as File | null,
   });
 
@@ -81,6 +108,7 @@ export default function DoctorProfilePage() {
           qualifications: doctor.qualifications || '',
           fees: doctor.fees || 0,
           available_days: doctor.available_days ? doctor.available_days.split(',') : [],
+          gender: doctor.gender || 'Male',
           image: null,
         });
         if (doctor.image) {
@@ -129,6 +157,7 @@ export default function DoctorProfilePage() {
       data.append('qualifications', formData.qualifications);
       data.append('fees', formData.fees.toString());
       data.append('availableDays', formData.available_days.join(','));
+      data.append('gender', formData.gender);
       if (formData.image) {
         data.append('image', formData.image);
       }
@@ -209,6 +238,22 @@ export default function DoctorProfilePage() {
                 className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
+            </div>
+
+            {/* Gender */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                {genders.map(g => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
             </div>
 
             {/* Specialty */}

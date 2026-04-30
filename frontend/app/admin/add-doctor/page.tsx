@@ -7,13 +7,42 @@ import api from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
 const specialties = [
-  'General Physician',
-  'Dermatologist',
-  'Pediatrician',
-  'Neurologist',
+  'Cardiac Surgeon',
+  'Cardiologist (Heart Specialist)',
+  'Chest Specialist (Pulmonologist)',
   'Gastroenterologist',
-  'Cardiologist',
+  'Neurologist',
+  'Neurosurgeon',
+  'Orthopedic Surgeon (Bone Specialist)',
+  'General Surgeon',
+  'Urologist',
+  'Nephrologist (Kidney Specialist)',
+  'Endocrinologist (Diabetes & Hormone Specialist)',
+  'Dermatologist (Skin Specialist)',
+  'Venereologist (Skin & Sexual Diseases)',
+  'Gynecologist & Obstetrician',
+  'Pediatrician (Child Specialist)',
+  'Neonatologist (Newborn Specialist)',
+  'Oncologist (Cancer Specialist)',
+  'Hematologist (Blood Specialist)',
+  'Rheumatologist (Joint & Autoimmune Specialist)',
+  'Ophthalmologist (Eye Specialist)',
+  'ENT Specialist (Ear, Nose, Throat)',
+  'Psychiatrist (Mental Health Specialist)',
+  'Radiologist (Imaging Specialist)',
+  'Pathologist (Lab Diagnosis Specialist)',
+  'Anesthesiologist',
+  'Critical Care Specialist (ICU)',
+  'Emergency Medicine Specialist',
+  'Physical Medicine & Rehabilitation Specialist',
+  'Pain Management Specialist',
+  'Plastic & Reconstructive Surgeon',
+  'Vascular Surgeon',
+  'Family Medicine Specialist',
+  'Public Health Specialist',
 ];
+
+const genders = ['Male', 'Female'];
 
 export default function AddDoctor() {
   const router = useRouter();
@@ -25,6 +54,7 @@ export default function AddDoctor() {
     qualifications: '',
     fees: '',
     availableDays: '',
+    gender: 'Male',
   });
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -75,6 +105,7 @@ export default function AddDoctor() {
       formDataToSend.append('qualifications', formData.qualifications);
       formDataToSend.append('fees', formData.fees);
       formDataToSend.append('availableDays', formData.availableDays);
+      formDataToSend.append('gender', formData.gender);
       if (image) {
         formDataToSend.append('image', image);
       }
