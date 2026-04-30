@@ -6,7 +6,7 @@ const { JWT_SECRET } = require('../middleware/auth');
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, role = 'patient', specialty, qualifications, fees, availableDays } = req.body;
+    const { name, email, password, role = 'patient', specialty, qualifications, fees, availableDays, gender } = req.body;
 
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
@@ -21,7 +21,7 @@ const register = async (req, res) => {
         throw new Error('Specialty and fees are required for doctor registration');
       }
       const image = req.file ? `/uploads/${req.file.filename}` : null;
-      await Doctor.create(userId, specialty, qualifications, fees, availableDays, image);
+      await Doctor.create(userId, specialty, qualifications, fees, availableDays, image, gender);
     }
 
     const token = jwt.sign({ id: userId, role }, JWT_SECRET, { expiresIn: '7d' });

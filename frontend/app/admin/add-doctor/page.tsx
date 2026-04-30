@@ -217,6 +217,19 @@ export default function AddDoctor() {
                   className="w-full border rounded-lg px-3 py-2"
                 />
               </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Gender</label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                >
+                  {genders.map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Qualifications</label>
