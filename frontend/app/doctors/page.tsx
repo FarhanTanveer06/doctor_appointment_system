@@ -109,7 +109,7 @@ function DoctorsContent() {
                     <img
                       src={getImageUrl(doctor.image)}
                       alt={doctor.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain bg-gray-100"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-blue-500 text-white text-5xl font-bold">
