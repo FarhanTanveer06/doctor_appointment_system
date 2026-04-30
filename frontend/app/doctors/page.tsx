@@ -26,7 +26,7 @@ interface Doctor {
   image: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';
 
 function DoctorsContent() {
   const router = useRouter();
@@ -64,7 +64,9 @@ function DoctorsContent() {
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return null;
     if (imagePath.startsWith('http')) return imagePath;
-    return `${API_URL}${imagePath}`;
+    // Remove /api from API_URL for static files
+    const baseUrl = API_URL.replace('/api', '');
+    return `${baseUrl}${imagePath}`;
   };
 
   return (

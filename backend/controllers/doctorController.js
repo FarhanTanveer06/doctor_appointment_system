@@ -65,6 +65,34 @@ const updateDoctorImage = async (req, res) => {
   }
 };
 
+const updateDoctorProfile = async (req, res) => {
+  try {
+    const { specialty, qualifications, fees, availableDays, name, email } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+    
+    // Get doctor by user_id from auth middleware
+    const doctor = await Doctor.findByUserId(req.user.id);
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor profile not found' });
+    }
+    
+    // Update doctor details
+    await Doctor.update(doctor.id, specialty, qualifications, fees, availableDays, image);
+    
+    // Update user name and email if provided
+    if (name || email) {
+      await User.updateProfile(req.user.id, name, email);
+    }
+    
+    // Fetch updated doctor data
+    const updatedDoctor = await Doctor.findById(doctor.id);
+    res.json({ message: 'Profile updated successfully', doctor: updatedDoctor });
+  } catch (error) {
+    console.error('UpdateDoctorProfile error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 const deleteDoctor = async (req, res) => {
   try {
     await Doctor.delete(req.params.id);
@@ -75,4 +103,4 @@ const deleteDoctor = async (req, res) => {
   }
 };
 
-module.exports = { getAllDoctors, getDoctorById, addDoctor, updateDoctor, updateDoctorImage, deleteDoctor };
+module.exports = { getAllDoctors, getDoctorById, addDoctor, updateDoctor, updateDoctorImage, updateDoctorProfile, deleteDoctor };

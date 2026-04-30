@@ -14,7 +14,10 @@ interface Doctor {
   qualifications: string;
   fees: number;
   available_days: string;
+  image: string;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';
 
 export default function AdminDoctors() {
   const router = useRouter();
@@ -77,6 +80,7 @@ export default function AdminDoctors() {
             <table className="w-full">
               <thead className="bg-gray-100">
                 <tr>
+                  <th className="px-4 py-3 text-left">Photo</th>
                   <th className="px-4 py-3 text-left">Name</th>
                   <th className="px-4 py-3 text-left">Email</th>
                   <th className="px-4 py-3 text-left">Specialty</th>
@@ -89,6 +93,17 @@ export default function AdminDoctors() {
               <tbody>
                 {doctors.map((doctor) => (
                   <tr key={doctor.id} className="border-t">
+                    <td className="px-4 py-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                        {doctor.image ? (
+                          <img src={`${API_URL}${doctor.image}`} alt={doctor.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                            {doctor.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">{doctor.name}</td>
                     <td className="px-4 py-3">{doctor.email}</td>
                     <td className="px-4 py-3">{doctor.specialty}</td>
