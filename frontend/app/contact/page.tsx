@@ -12,21 +12,21 @@ export default function Contact() {
               <span className="text-xl mr-4">📍</span>
               <div>
                 <h3 className="font-semibold">Address</h3>
-                <p>123 Healthcare Street, Medical City, MC 12345</p>
+                <p>Suvastu Chirontoni, 26 Indira Road, Farmgate</p>
               </div>
             </div>
             <div className="flex items-start">
               <span className="text-xl mr-4">📞</span>
               <div>
                 <h3 className="font-semibold">Phone</h3>
-                <p>+1 (555) 123-4567</p>
+                <p>01636656861</p>
               </div>
             </div>
             <div className="flex items-start">
               <span className="text-xl mr-4">✉️</span>
               <div>
                 <h3 className="font-semibold">Email</h3>
-                <p>contact@doctorappointment.com</p>
+                <p>farhansarkar10130@gmail.com</p>
               </div>
             </div>
             <div className="flex items-start">
