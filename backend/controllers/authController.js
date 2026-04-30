@@ -17,6 +17,9 @@ const register = async (req, res) => {
     const userId = await User.create(name, email, hashedPassword, role);
 
     if (role === 'doctor') {
+      if (!specialty || !fees) {
+        throw new Error('Specialty and fees are required for doctor registration');
+      }
       const image = req.file ? `/uploads/${req.file.filename}` : null;
       await Doctor.create(userId, specialty, qualifications, fees, availableDays, image);
     }
@@ -29,8 +32,8 @@ const register = async (req, res) => {
       user: { id: userId, name, email, role }
     });
   } catch (error) {
-    console.error('Register error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Register error:', error.message, error.stack);
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
 

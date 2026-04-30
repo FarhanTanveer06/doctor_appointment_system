@@ -58,6 +58,13 @@ export default function AddDoctor() {
     try {
       setLoading(true);
 
+      // Validate required fields
+      if (!formData.specialty || !formData.fees) {
+        alert('Please fill in all required fields');
+        setLoading(false);
+        return;
+      }
+
       // Create FormData for multipart upload
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
@@ -80,7 +87,8 @@ export default function AddDoctor() {
       router.push('/admin/doctors');
     } catch (error: any) {
       console.error('Error:', error);
-      alert(error.response?.data?.message || 'Failed to add doctor');
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to add doctor';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
