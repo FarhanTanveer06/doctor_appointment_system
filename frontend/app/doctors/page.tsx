@@ -140,8 +140,9 @@ function DoctorsContent() {
   const getImageUrl = (imagePath: string | null | undefined): string | undefined => {
     if (!imagePath) return undefined;
     if (imagePath.startsWith('http')) return imagePath;
-    // API_URL is http://localhost:5000/api, imagePath is /uploads/xxx
-    return `http://localhost:5000${imagePath}`;
+    // Use API_URL from env, removing /api suffix to get base URL
+    const baseUrl = API_URL.replace('/api', '');
+    return `${baseUrl}${imagePath}`;
   };
 
   return (

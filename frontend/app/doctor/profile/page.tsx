@@ -73,7 +73,6 @@ const specialties = [
 ];
 
 const genders = ['Male', 'Female'];
-
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export default function DoctorProfilePage() {
@@ -85,6 +84,7 @@ export default function DoctorProfilePage() {
   const [profile, setProfile] = useState<DoctorProfile | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('basic');
+  const [editingField, setEditingField] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -144,7 +144,7 @@ export default function DoctorProfilePage() {
           chambers: doctor.chambers || [],
         });
         if (doctor.image) {
-          setImagePreview(`${API_URL}${doctor.image}`);
+          setImagePreview(getImageUrl(doctor.image));
         }
       }
     } catch (error) {
@@ -168,11 +168,53 @@ export default function DoctorProfilePage() {
     });
   };
 
+  const getImageUrl = (imagePath: string | null | undefined): string => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${API_URL}${imagePath}`;
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData(prev => ({ ...prev, image: file }));
       setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const startEditing = (field: string) => {
+    setEditingField(field);
+  };
+
+  const cancelEditing = () => {
+    setEditingField(null);
+  };
+
+  const saveSingleField = async (field: string, value: string) => {
+    setSaving(true);
+    setMessage('');
+    try {
+      const data = new FormData();
+      data.append(field, value);
+      if (field === 'image' && formData.image) {
+        data.append('image', formData.image);
+      }
+
+      const res = await api.put('/doctors/profile/update', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      setMessage(`${field} updated successfully!`);
+      if (res.data.doctor?.image) {
+        setImagePreview(getImageUrl(res.data.doctor.image));
+      }
+      setEditingField(null);
+      fetchProfile();
+    } catch (error) {
+      console.error('Failed to update field', error);
+      setMessage('Failed to update. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -243,6 +285,75 @@ export default function DoctorProfilePage() {
 
   if (authLoading || loading) return <div className="p-8 text-center">Loading...</div>;
 
+  // Render a field with display value and edit button
+  const renderField = (label: string, field: string, value: string | number, type: 'text' | 'email' | 'number' | 'textarea' | 'select' = 'text', options?: string[]) => {
+    const isEditing = editingField === field;
+    const displayValue = value === null || value === undefined || value === '' ? 'Not set' : value;
+
+    if (isEditing) {
+      return (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+          {type === 'textarea' ? (
+            <textarea
+              value={formData[field as keyof typeof formData] as string}
+              onChange={(e) => setFormData(prev => ({ ...prev, [field]: e.target.value }))}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+            />
+          ) : type === 'select' && options ? (
+            <select
+              value={formData[field as keyof typeof formData] as string}
+              onChange={(e) => setFormData(prev => ({ ...prev, [field]: e.target.value }))}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
+          ) : (
+            <input
+              type={type}
+              value={formData[field as keyof typeof formData] as string}
+              onChange={(e) => setFormData(prev => ({ ...prev, [field]: type === 'number' ? parseFloat(e.target.value) : e.target.value }))}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          )}
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => saveSingleField(field, formData[field as keyof typeof formData] as string)}
+              disabled={saving}
+              className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Update'}
+            </button>
+            <button
+              onClick={cancelEditing}
+              className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 px-3 py-2 bg-gray-50 border rounded text-gray-800">
+            {displayValue}
+          </div>
+          <button
+            onClick={() => startEditing(field)}
+            className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 whitespace-nowrap"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -254,9 +365,9 @@ export default function DoctorProfilePage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
-          {/* Profile Image */}
-          <div className="mb-6 flex flex-col items-center">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          {/* Profile Image Section */}
+          <div className="mb-8 flex flex-col items-center border-b pb-8">
             <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4">
               {imagePreview ? (
                 <img src={imagePreview} alt="Profile" className="w-full h-full object-contain" />
@@ -268,19 +379,47 @@ export default function DoctorProfilePage() {
                 </div>
               )}
             </div>
-            <label className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-              <span>Change Photo</span>
-              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-            </label>
+            <div className="flex gap-2">
+              <label className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                <span>Change Photo</span>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              </label>
+              {formData.image && (
+                <button
+                  onClick={async () => {
+                    setSaving(true);
+                    try {
+                      const data = new FormData();
+                      data.append('image', formData.image as File);
+                      const res = await api.put('/doctors/profile/update', data, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                      });
+                      setMessage('Photo updated successfully!');
+                      if (res.data.doctor?.image) {
+                        setImagePreview(getImageUrl(res.data.doctor.image));
+                      }
+                    } catch (error) {
+                      setMessage('Failed to update photo. Please try again.');
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  disabled={saving}
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+                >
+                  {saving ? 'Uploading...' : 'Update Photo'}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex mb-4 border-b">
+          <div className="flex mb-6 border-b">
             {['basic', 'professional', 'chambers'].map(tab => (
               <button
                 key={tab}
                 type="button"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => { setActiveTab(tab); setEditingField(null); }}
                 className={`px-4 py-2 capitalize ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-600 font-semibold' : 'text-gray-600'}`}
               >
                 {tab === 'basic' ? 'Basic Info' : tab === 'professional' ? 'Professional Info' : 'Chambers'}
@@ -290,80 +429,43 @@ export default function DoctorProfilePage() {
 
           {/* Basic Info Tab */}
           {activeTab === 'basic' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                <select name="gender" value={formData.gender} onChange={handleChange} className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  {genders.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">BMDC Registration No.</label>
-                <input type="text" name="bmdc_reg_no" value={formData.bmdc_reg_no} onChange={handleChange} placeholder="e.g., BMDC-12345" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ID No. (NID/Passport)</label>
-                <input type="text" name="id_no" value={formData.id_no} onChange={handleChange} placeholder="e.g., 1234567890" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Consultation Fees ($)</label>
-                <input type="number" name="fees" value={formData.fees} onChange={handleChange} className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="md:col-span-2">
+            <div>
+              {renderField('Name', 'name', formData.name)}
+              {renderField('Email', 'email', formData.email, 'email')}
+              {renderField('Gender', 'gender', formData.gender, 'select', genders)}
+              {renderField('BMDC Registration No.', 'bmdc_reg_no', formData.bmdc_reg_no)}
+              {renderField('ID No. (NID/Passport)', 'id_no', formData.id_no)}
+              {renderField('Consultation Fees ($)', 'fees', formData.fees.toString(), 'number')}
+              
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Available Days</label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-2">
                   {days.map(day => (
-                    <button key={day} type="button" onClick={() => handleDayToggle(day)} className={`px-3 py-1 rounded text-sm ${formData.available_days.includes(day) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}>
+                    <span key={day} className={`px-3 py-1 rounded text-sm ${formData.available_days.includes(day) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}>
                       {day.substring(0, 3)}
-                    </button>
+                    </span>
                   ))}
                 </div>
+                <button
+                  onClick={() => startEditing('available_days')}
+                  className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                >
+                  Edit
+                </button>
               </div>
             </div>
           )}
 
           {/* Professional Info Tab */}
           {activeTab === 'professional' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Specialty</label>
-                <select name="specialty" value={formData.specialty} onChange={handleChange} className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Select Specialty</option>
-                  {specialties.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Qualifications</label>
-                <input type="text" name="qualifications" value={formData.qualifications} onChange={handleChange} placeholder="e.g., MBBS, MD, MS" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Field of Concentration</label>
-                <textarea name="field_of_concentration" value={formData.field_of_concentration} onChange={handleChange} placeholder="e.g., Interventional Cardiology, Heart Failure Management" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" rows={2} />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Specializations</label>
-                <textarea name="specializations" value={formData.specializations} onChange={handleChange} placeholder="e.g., Cardiac Catheterization, Angioplasty, Pacemaker Implantation" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" rows={2} />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Work Experience</label>
-                <textarea name="work_experience" value={formData.work_experience} onChange={handleChange} placeholder="e.g., Senior Consultant at Dhaka Medical College (2015-2020)" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" rows={3} />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Education</label>
-                <textarea name="education" value={formData.education} onChange={handleChange} placeholder="e.g., MBBS (Dhaka Medical College, 2010), MD in Cardiology (BSMMU, 2015)" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" rows={3} />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description / About</label>
-                <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Write a brief description about yourself, your approach to patient care, etc." className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" rows={4} />
-              </div>
+            <div>
+              {renderField('Specialty', 'specialty', formData.specialty, 'select', specialties)}
+              {renderField('Qualifications', 'qualifications', formData.qualifications)}
+              {renderField('Field of Concentration', 'field_of_concentration', formData.field_of_concentration, 'textarea')}
+              {renderField('Specializations', 'specializations', formData.specializations, 'textarea')}
+              {renderField('Work Experience', 'work_experience', formData.work_experience, 'textarea')}
+              {renderField('Education', 'education', formData.education, 'textarea')}
+              {renderField('Description / About', 'description', formData.description, 'textarea')}
             </div>
           )}
 
@@ -410,16 +512,34 @@ export default function DoctorProfilePage() {
                   </div>
                 ))
               )}
+              {formData.chambers.length > 0 && (
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    setSaving(true);
+                    setMessage('');
+                    try {
+                      const data = new FormData();
+                      data.append('chambers', JSON.stringify(formData.chambers));
+                      const res = await api.put('/doctors/profile/update', data, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                      });
+                      setMessage('Chambers updated successfully!');
+                    } catch (error) {
+                      setMessage('Failed to update chambers. Please try again.');
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  disabled={saving}
+                  className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 mt-4"
+                >
+                  {saving ? 'Saving...' : 'Save All Chambers'}
+                </button>
+              )}
             </div>
           )}
-
-          {/* Submit Button */}
-          <div className="mt-6 flex justify-end">
-            <button type="submit" disabled={saving} className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50">
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

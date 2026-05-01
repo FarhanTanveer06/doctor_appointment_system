@@ -70,9 +70,8 @@ const updateDoctorProfile = async (req, res) => {
     const { 
       specialty, qualifications, fees, availableDays, name, email, gender,
       bmdc_reg_no, id_no, description, field_of_concentration, specializations, 
-      work_experience, education, chambers
+      work_experience, education, chambers, image
     } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
     
     // Get doctor by user_id from auth middleware
     const doctor = await Doctor.findByUserId(req.user.id);
@@ -80,15 +79,29 @@ const updateDoctorProfile = async (req, res) => {
       return res.status(404).json({ message: 'Doctor profile not found' });
     }
     
-    // Update doctor details
-    await Doctor.update(doctor.id, {
-      specialty, qualifications, fees, available_days: availableDays, image, gender,
-      bmdc_reg_no, id_no, description, field_of_concentration, specializations,
-      work_experience, education
-    });
+    // Build update data object with only provided fields
+    const updateData = {};
+    if (specialty !== undefined) updateData.specialty = specialty;
+    if (qualifications !== undefined) updateData.qualifications = qualifications;
+    if (fees !== undefined) updateData.fees = fees;
+    if (availableDays !== undefined) updateData.available_days = availableDays;
+    if (gender !== undefined) updateData.gender = gender;
+    if (bmdc_reg_no !== undefined) updateData.bmdc_reg_no = bmdc_reg_no;
+    if (id_no !== undefined) updateData.id_no = id_no;
+    if (description !== undefined) updateData.description = description;
+    if (field_of_concentration !== undefined) updateData.field_of_concentration = field_of_concentration;
+    if (specializations !== undefined) updateData.specializations = specializations;
+    if (work_experience !== undefined) updateData.work_experience = work_experience;
+    if (education !== undefined) updateData.education = education;
+    if (image !== undefined) updateData.image = image;
+    
+    // Only update doctor if there's data to update
+    if (Object.keys(updateData).length > 0) {
+      await Doctor.update(doctor.id, updateData);
+    }
     
     // Update user name and email if provided
-    if (name || email) {
+    if (name !== undefined || email !== undefined) {
       await User.updateProfile(req.user.id, name, email);
     }
     

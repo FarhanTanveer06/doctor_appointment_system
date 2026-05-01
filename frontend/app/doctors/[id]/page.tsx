@@ -89,10 +89,12 @@ export default function DoctorProfile() {
     }
   };
 
-  const getImageUrl = (imagePath: string) => {
-    if (!imagePath) return null;
+  const getImageUrl = (imagePath: string | null | undefined): string | undefined => {
+    if (!imagePath) return undefined;
     if (imagePath.startsWith('http')) return imagePath;
-    return `http://localhost:5000${imagePath}`;
+    // Use API_URL from env, removing /api suffix to get base URL
+    const baseUrl = API_URL.replace('/api', '');
+    return `${baseUrl}${imagePath}`;
   };
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
