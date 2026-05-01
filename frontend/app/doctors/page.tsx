@@ -45,6 +45,14 @@ const specialties = [
 const searchTypes = ['All', 'Doctor', 'Hospital'];
 const genders = ['All', 'Male', 'Female'];
 
+interface Chamber {
+  chamber_name: string;
+  chamber_address: string;
+  available_days?: string;
+  appointment_time_start?: string;
+  appointment_time_end?: string;
+}
+
 interface Doctor {
   id: number;
   name: string;
@@ -55,6 +63,11 @@ interface Doctor {
   available_days: string;
   image: string;
   gender?: string;
+  bmdc_reg_no?: string;
+  description?: string;
+  field_of_concentration?: string;
+  specializations?: string;
+  chambers?: Chamber[];
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';
@@ -124,11 +137,11 @@ function DoctorsContent() {
     router.push(`/doctors?${params.toString()}`);
   };
 
-  const getImageUrl = (imagePath: string) => {
-    if (!imagePath) return null;
+  const getImageUrl = (imagePath: string | null | undefined): string | undefined => {
+    if (!imagePath) return undefined;
     if (imagePath.startsWith('http')) return imagePath;
-    const baseUrl = API_URL.replace('/api', '');
-    return `${baseUrl}${imagePath}`;
+    // API_URL is http://localhost:5000/api, imagePath is /uploads/xxx
+    return `http://localhost:5000${imagePath}`;
   };
 
   return (
@@ -224,15 +237,17 @@ function DoctorsContent() {
                 {/* Doctor Info */}
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-1">{doctor.name}</h3>
-                  <p className="text-blue-600 font-medium mb-2">{doctor.specialty}</p>
-                  <p className="text-gray-600 text-sm mb-2">{doctor.qualifications || 'No qualifications listed'}</p>
+                  <p className="text-blue-600 font-medium mb-1">{doctor.specialty}</p>
+                  {doctor.bmdc_reg_no && <p className="text-xs text-gray-500 mb-1">BMDC Reg: {doctor.bmdc_reg_no}</p>}
+                  <p className="text-gray-600 text-sm mb-1">{doctor.qualifications || 'No qualifications listed'}</p>
+                  {doctor.field_of_concentration && <p className="text-xs text-gray-500 mb-1">Focus: {doctor.field_of_concentration}</p>}
                   <p className="text-gray-500 text-sm mb-2">Available: {doctor.available_days || 'Not specified'}</p>
+                  {doctor.chambers && doctor.chambers.length > 0 && (
+                    <p className="text-xs text-gray-500 mb-2">{doctor.chambers.length} chamber(s)</p>
+                  )}
                   <div className="flex items-center justify-between mt-4">
                     <p className="text-xl font-bold text-green-600">${doctor.fees}</p>
-                    <Link
-                      href={`/doctors/${doctor.id}`}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
-                    >
+                    <Link href={`/doctors/${doctor.id}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
                       View & Book
                     </Link>
                   </div>

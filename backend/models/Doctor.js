@@ -51,32 +51,75 @@ const Doctor = {
     return rows[0];
   },
 
-  async update(id, specialty, qualifications, fees, availableDays, image = null, gender = null) {
-    if (image && gender) {
+  async update(id, data) {
+    const fields = [];
+    const params = [];
+    
+    if (data.specialty !== undefined) { fields.push('specialty = ?'); params.push(data.specialty); }
+    if (data.qualifications !== undefined) { fields.push('qualifications = ?'); params.push(data.qualifications); }
+    if (data.fees !== undefined) { fields.push('fees = ?'); params.push(data.fees); }
+    if (data.available_days !== undefined) { fields.push('available_days = ?'); params.push(data.available_days); }
+    if (data.image !== undefined) { fields.push('image = ?'); params.push(data.image); }
+    if (data.gender !== undefined) { fields.push('gender = ?'); params.push(data.gender); }
+    if (data.bmdc_reg_no !== undefined) { fields.push('bmdc_reg_no = ?'); params.push(data.bmdc_reg_no); }
+    if (data.id_no !== undefined) { fields.push('id_no = ?'); params.push(data.id_no); }
+    if (data.description !== undefined) { fields.push('description = ?'); params.push(data.description); }
+    if (data.field_of_concentration !== undefined) { fields.push('field_of_concentration = ?'); params.push(data.field_of_concentration); }
+    if (data.specializations !== undefined) { fields.push('specializations = ?'); params.push(data.specializations); }
+    if (data.work_experience !== undefined) { fields.push('work_experience = ?'); params.push(data.work_experience); }
+    if (data.education !== undefined) { fields.push('education = ?'); params.push(data.education); }
+    
+    if (fields.length > 0) {
+      params.push(id);
       await pool.execute(
-        'UPDATE doctors SET specialty = ?, qualifications = ?, fees = ?, available_days = ?, image = ?, gender = ? WHERE id = ?',
-        [specialty, qualifications, fees, availableDays, image, gender, id]
-      );
-    } else if (image) {
-      await pool.execute(
-        'UPDATE doctors SET specialty = ?, qualifications = ?, fees = ?, available_days = ?, image = ? WHERE id = ?',
-        [specialty, qualifications, fees, availableDays, image, id]
-      );
-    } else if (gender) {
-      await pool.execute(
-        'UPDATE doctors SET specialty = ?, qualifications = ?, fees = ?, available_days = ?, gender = ? WHERE id = ?',
-        [specialty, qualifications, fees, availableDays, gender, id]
-      );
-    } else {
-      await pool.execute(
-        'UPDATE doctors SET specialty = ?, qualifications = ?, fees = ?, available_days = ? WHERE id = ?',
-        [specialty, qualifications, fees, availableDays, id]
+        `UPDATE doctors SET ${fields.join(', ')} WHERE id = ?`,
+        params
       );
     }
   },
 
   async updateImage(id, image) {
     await pool.execute('UPDATE doctors SET image = ? WHERE id = ?', [image, id]);
+  },
+
+  // Chamber methods
+  async addChamber(doctorId, chamberData) {
+    const [result] = await pool.execute(
+      'INSERT INTO doctor_chambers (doctor_id, chamber_name, chamber_address, available_days, appointment_time_start, appointment_time_end) VALUES (?, ?, ?, ?, ?, ?)',
+      [doctorId, chamberData.chamber_name, chamberData.chamber_address, chamberData.available_days, chamberData.appointment_time_start, chamberData.appointment_time_end]
+    );
+    return result.insertId;
+  },
+
+  async getChambers(doctorId) {
+    const [rows] = await pool.execute(
+      'SELECT * FROM doctor_chambers WHERE doctor_id = ? ORDER BY id',
+      [doctorId]
+    );
+    return rows;
+  },
+
+  async updateChamber(chamberId, chamberData) {
+    const fields = [];
+    const params = [];
+    
+    if (chamberData.chamber_name !== undefined) { fields.push('chamber_name = ?'); params.push(chamberData.chamber_name); }
+    if (chamberData.chamber_address !== undefined) { fields.push('chamber_address = ?'); params.push(chamberData.chamber_address); }
+    if (chamberData.available_days !== undefined) { fields.push('available_days = ?'); params.push(chamberData.available_days); }
+    if (chamberData.appointment_time_start !== undefined) { fields.push('appointment_time_start = ?'); params.push(chamberData.appointment_time_start); }
+    if (chamberData.appointment_time_end !== undefined) { fields.push('appointment_time_end = ?'); params.push(chamberData.appointment_time_end); }
+    
+    if (fields.length > 0) {
+      params.push(chamberId);
+      await pool.execute(
+        `UPDATE doctor_chambers SET ${fields.join(', ')} WHERE id = ?`,
+        params
+      );
+    }
+  },
+
+  async deleteChamber(chamberId) {
+    await pool.execute('DELETE FROM doctor_chambers WHERE id = ?', [chamberId]);
   },
 
   async delete(id) {

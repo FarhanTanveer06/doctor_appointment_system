@@ -6,6 +6,14 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
+interface Chamber {
+  chamber_name: string;
+  chamber_address: string;
+  available_days?: string;
+  appointment_time_start?: string;
+  appointment_time_end?: string;
+}
+
 interface Doctor {
   id: number;
   name: string;
@@ -15,6 +23,14 @@ interface Doctor {
   fees: number;
   available_days: string;
   image: string;
+  bmdc_reg_no?: string;
+  id_no?: string;
+  description?: string;
+  field_of_concentration?: string;
+  specializations?: string;
+  work_experience?: string;
+  education?: string;
+  chambers?: Chamber[];
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';

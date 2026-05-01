@@ -37,7 +37,7 @@ const Appointment = {
 
   async findByDoctor(doctorId) {
     const [rows] = await pool.execute(
-      `SELECT a.*, p.name as patient_name, p.email as patient_email, p.phone
+      `SELECT a.*, p.name as patient_name, p.email as patient_email
        FROM appointments a
        JOIN users p ON a.patient_id = p.id
        WHERE a.doctor_id = ?
@@ -50,10 +50,11 @@ const Appointment = {
   async findAll() {
     const [rows] = await pool.execute(
       `SELECT a.*, p.name as patient_name, p.email as patient_email,
-              d.name as doctor_name, d.specialty
+              u.name as doctor_name, d.specialty
        FROM appointments a
        JOIN users p ON a.patient_id = p.id
        JOIN doctors d ON a.doctor_id = d.id
+       JOIN users u ON d.user_id = u.id
        ORDER BY a.appointment_date DESC, a.appointment_time DESC`
     );
     return rows;

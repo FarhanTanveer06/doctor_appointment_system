@@ -67,7 +67,11 @@ const updateDoctorImage = async (req, res) => {
 
 const updateDoctorProfile = async (req, res) => {
   try {
-    const { specialty, qualifications, fees, availableDays, name, email, gender } = req.body;
+    const { 
+      specialty, qualifications, fees, availableDays, name, email, gender,
+      bmdc_reg_no, id_no, description, field_of_concentration, specializations, 
+      work_experience, education, chambers
+    } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
     
     // Get doctor by user_id from auth middleware
@@ -77,18 +81,58 @@ const updateDoctorProfile = async (req, res) => {
     }
     
     // Update doctor details
-    await Doctor.update(doctor.id, specialty, qualifications, fees, availableDays, image, gender);
+    await Doctor.update(doctor.id, {
+      specialty, qualifications, fees, available_days: availableDays, image, gender,
+      bmdc_reg_no, id_no, description, field_of_concentration, specializations,
+      work_experience, education
+    });
     
     // Update user name and email if provided
     if (name || email) {
       await User.updateProfile(req.user.id, name, email);
     }
     
-    // Fetch updated doctor data
+    // Update chambers if provided
+    if (chambers && Array.isArray(chambers)) {
+      // Delete existing chambers and add new ones
+      const existingChambers = await Doctor.getChambers(doctor.id);
+      for (const chamber of existingChambers) {
+        await Doctor.deleteChamber(chamber.id);
+      }
+      // Add new chambers
+      for (const chamber of chambers) {
+        if (chamber.chamber_name && chamber.chamber_address) {
+          await Doctor.addChamber(doctor.id, chamber);
+        }
+      }
+    }
+    
+    // Fetch updated doctor data with chambers
     const updatedDoctor = await Doctor.findById(doctor.id);
-    res.json({ message: 'Profile updated successfully', doctor: updatedDoctor });
+    const doctorChambers = await Doctor.getChambers(doctor.id);
+    
+    res.json({ 
+      message: 'Profile updated successfully', 
+      doctor: { ...updatedDoctor, chambers: doctorChambers }
+    });
   } catch (error) {
     console.error('UpdateDoctorProfile error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get doctor profile with chambers
+const getDoctorProfile = async (req, res) => {
+  try {
+    const doctor = await Doctor.findByUserId(req.user.id);
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor profile not found' });
+    }
+    
+    const chambers = await Doctor.getChambers(doctor.id);
+    res.json({ doctor: { ...doctor, chambers } });
+  } catch (error) {
+    console.error('GetDoctorProfile error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -103,4 +147,4 @@ const deleteDoctor = async (req, res) => {
   }
 };
 
-module.exports = { getAllDoctors, getDoctorById, addDoctor, updateDoctor, updateDoctorImage, updateDoctorProfile, deleteDoctor };
+module.exports = { getAllDoctors, getDoctorById, addDoctor, updateDoctor, updateDoctorImage, updateDoctorProfile, deleteDoctor, getDoctorProfile };

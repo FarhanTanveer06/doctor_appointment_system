@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllDoctors, getDoctorById, addDoctor, updateDoctor, updateDoctorImage, deleteDoctor, updateDoctorProfile } = require('../controllers/doctorController');
+const { getAllDoctors, getDoctorById, addDoctor, updateDoctor, updateDoctorImage, deleteDoctor, updateDoctorProfile, getDoctorProfile } = require('../controllers/doctorController');
 const { auth, adminOnly } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
@@ -13,5 +13,6 @@ router.delete('/:id', auth, adminOnly, deleteDoctor);
 // Doctor's own profile route
 router.put('/profile/update', auth, upload.single('image'), updateDoctorProfile);
 router.put('/profile/image', auth, upload.single('image'), updateDoctorImage);
+router.get('/profile/me', auth, getDoctorProfile);
 
 module.exports = router;
