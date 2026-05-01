@@ -44,13 +44,22 @@ const specialties = [
 const searchTypes = ['All', 'Doctor', 'Hospital'];
 const genders = ['All', 'Male', 'Female'];
 
+interface Doctor {
+  id: number;
+  name: string;
+  specialty: string;
+  image?: string | null;
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';
+
 export default function Home() {
   const router = useRouter();
   const [searchType, setSearchType] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [gender, setGender] = useState('All');
   const [specialty, setSpecialty] = useState('');
-  const [doctors, setDoctors] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -76,6 +85,12 @@ export default function Home() {
 
   const handleSpecialtyClick = (spec: string) => {
     router.push(`/doctors?specialty=${encodeURIComponent(spec)}`);
+  };
+
+  const getImageUrl = (imagePath: string | null | undefined): string | undefined => {
+    if (!imagePath) return undefined;
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${API_URL}${imagePath}`;
   };
 
   return (
@@ -173,7 +188,7 @@ export default function Home() {
               <div key={doctor.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-40 bg-gray-200 flex items-center justify-center">
                   {doctor.image ? (
-                    <img src={doctor.image} alt={doctor.name} className="w-full h-full object-contain" />
+                    <img src={getImageUrl(doctor.image)} alt={doctor.name} className="w-full h-full object-contain" />
                   ) : (
                     <div className="text-4xl font-bold text-gray-400">{doctor.name?.charAt(0)}</div>
                   )}

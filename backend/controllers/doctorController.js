@@ -70,8 +70,9 @@ const updateDoctorProfile = async (req, res) => {
     const { 
       specialty, qualifications, fees, availableDays, name, email, gender,
       bmdc_reg_no, id_no, description, field_of_concentration, specializations, 
-      work_experience, education, chambers, image
+      work_experience, education, chambers
     } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : req.body.image;
     
     // Get doctor by user_id from auth middleware
     const doctor = await Doctor.findByUserId(req.user.id);
@@ -106,14 +107,15 @@ const updateDoctorProfile = async (req, res) => {
     }
     
     // Update chambers if provided
-    if (chambers && Array.isArray(chambers)) {
+    const parsedChambers = typeof chambers === 'string' ? JSON.parse(chambers) : chambers;
+    if (Array.isArray(parsedChambers)) {
       // Delete existing chambers and add new ones
       const existingChambers = await Doctor.getChambers(doctor.id);
       for (const chamber of existingChambers) {
         await Doctor.deleteChamber(chamber.id);
       }
       // Add new chambers
-      for (const chamber of chambers) {
+      for (const chamber of parsedChambers) {
         if (chamber.chamber_name && chamber.chamber_address) {
           await Doctor.addChamber(doctor.id, chamber);
         }

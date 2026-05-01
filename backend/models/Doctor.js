@@ -45,7 +45,10 @@ const Doctor = {
 
   async findByUserId(userId) {
     const [rows] = await pool.execute(
-      'SELECT * FROM doctors WHERE user_id = ?',
+      `SELECT d.*, u.name, u.email
+       FROM doctors d
+       JOIN users u ON d.user_id = u.id
+       WHERE d.user_id = ?`,
       [userId]
     );
     return rows[0];
