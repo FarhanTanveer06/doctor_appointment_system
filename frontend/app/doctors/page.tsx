@@ -150,7 +150,7 @@ function DoctorsContent() {
       <section className="relative overflow-hidden bg-slate-950 px-4 py-14 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(37,99,235,0.28),transparent_32%),radial-gradient(circle_at_85%_20%,rgba(20,184,166,0.18),transparent_30%)]" />
         <div className="relative mx-auto w-full max-w-[1680px] lg:px-8">
-          <p className="font-semibold text-blue-300">Doctor Directory</p>
+          <p className="font-semibold text-teal-300">Doctor Directory</p>
           <div className="mt-3 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <h1 className="text-4xl font-bold md:text-5xl">Find the right specialist</h1>
@@ -177,7 +177,7 @@ function DoctorsContent() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                className="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               />
             </div>
 
@@ -189,7 +189,7 @@ function DoctorsContent() {
                     key={item}
                     onClick={() => handleGenderChange(item)}
                     className={`rounded-md text-sm font-semibold transition ${
-                      gender === item ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'
+                      gender === item ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:bg-white'
                     }`}
                   >
                     {item}
@@ -203,7 +203,7 @@ function DoctorsContent() {
               <select
                 value={selectedSpecialty}
                 onChange={(e) => handleSpecialtyChange(e.target.value)}
-                className="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                className="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
               >
                 {specialties.map((specialty) => (
                   <option key={specialty} value={specialty}>{specialty}</option>
@@ -211,7 +211,7 @@ function DoctorsContent() {
               </select>
             </div>
 
-            <button onClick={handleSearch} className="h-12 rounded-lg bg-blue-600 px-7 font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">
+            <button onClick={handleSearch} className="h-12 rounded-lg bg-teal-600 px-7 font-semibold text-white shadow-lg shadow-teal-600/20 transition hover:-translate-y-0.5 hover:bg-teal-700">
               Search
             </button>
             <button onClick={clearFilters} className="h-12 rounded-lg border border-slate-300 px-6 font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
@@ -229,7 +229,7 @@ function DoctorsContent() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-sm">
-              {selectedSpecialty !== 'All' && <span className="rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700">{selectedSpecialty}</span>}
+              {selectedSpecialty !== 'All' && <span className="rounded-full bg-teal-50 px-3 py-1 font-medium text-teal-700">{selectedSpecialty}</span>}
               {gender !== 'All' && <span className="rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-700">{gender}</span>}
               {searchQuery && <span className="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-700">{searchQuery}</span>}
             </div>
@@ -241,66 +241,75 @@ function DoctorsContent() {
             <div className="rounded-lg bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
               <h3 className="text-xl font-bold text-slate-950">No doctors found</h3>
               <p className="mt-2 text-slate-500">Try changing your search or clearing filters.</p>
-              <button onClick={clearFilters} className="mt-5 rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">
+              <button onClick={clearFilters} className="mt-5 rounded-lg bg-teal-600 px-5 py-3 font-semibold text-white hover:bg-teal-700">
                 Clear Filters
               </button>
             </div>
           ) : (
-            <div className="grid w-full gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="grid w-full gap-5">
               {doctors.map((doctor) => (
-                <article key={doctor.id} className="group relative overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/10">
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-teal-500 to-emerald-400 opacity-0 transition group-hover:opacity-100" />
-                  <div className="flex h-full flex-col">
-                    <Link href={`/doctors/${doctor.id}`} className="block h-48 overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
+                <article key={doctor.id} className="group relative overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-300/70">
+                  <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-teal-500 via-emerald-400 to-cyan-500 opacity-80" />
+                  <div className="grid gap-0 lg:grid-cols-[220px_1fr_260px]">
+                    <Link href={`/doctors/${doctor.id}`} className="block h-64 overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50 to-white lg:h-full">
                       {doctor.image ? (
-                        <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-contain object-top p-2 transition duration-500 group-hover:scale-105" />
+                        <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-contain object-top p-3 transition duration-500 group-hover:scale-105" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-blue-600 text-5xl font-bold text-white">
+                        <div className="flex h-full w-full items-center justify-center bg-teal-600 text-5xl font-bold text-white">
                           {doctor.name.charAt(0)}
                         </div>
                       )}
                     </Link>
 
-                    <div className="flex flex-1 flex-col p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <Link href={`/doctors/${doctor.id}`} className="text-lg font-bold text-slate-950 hover:text-blue-700">
-                            {doctor.name}
-                          </Link>
-                          <p className="mt-1 text-sm font-medium text-blue-600">{doctor.specialty}</p>
-                        </div>
-                        <div className="shrink-0 rounded-lg bg-emerald-50 px-3 py-2 text-right ring-1 ring-emerald-100">
-                          <p className="text-xs text-emerald-700">Fee</p>
-                          <p className="font-bold text-emerald-700">${doctor.fees}</p>
-                        </div>
-                      </div>
-
-                      <div className="mt-3 line-clamp-3 space-y-1 text-sm text-slate-600">
-                        {doctor.bmdc_reg_no && <p>BMDC Reg: {doctor.bmdc_reg_no}</p>}
-                        <p>{doctor.qualifications || 'No qualifications listed'}</p>
-                        {doctor.field_of_concentration && <p>Focus: {doctor.field_of_concentration}</p>}
-                      </div>
-
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
-                          {doctor.available_days || 'Availability not specified'}
-                        </span>
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
-                          {doctor.chambers?.length || 0} chamber(s)
+                    <div className="p-5 lg:p-6">
+                      <div className="flex flex-wrap items-start gap-3">
+                        <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-100">
+                          {doctor.specialty}
                         </span>
                         {doctor.gender && (
-                          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                             {doctor.gender}
+                          </span>
+                        )}
+                        {doctor.chambers && (
+                          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                            {doctor.chambers.length} chamber(s)
                           </span>
                         )}
                       </div>
 
-                      <div className="mt-auto flex gap-2 pt-4">
-                        <Link href={`/doctors/${doctor.id}`} className="flex-1 rounded-lg bg-blue-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
+                      <Link href={`/doctors/${doctor.id}`} className="mt-4 block text-2xl font-bold text-slate-950 transition hover:text-teal-700">
+                            {doctor.name}
+                          </Link>
+
+                      <div className="mt-3 grid gap-2 text-sm leading-6 text-slate-600 md:grid-cols-2">
+                        {doctor.bmdc_reg_no && <p>BMDC Reg: {doctor.bmdc_reg_no}</p>}
+                        <p>{doctor.qualifications || 'No qualifications listed'}</p>
+                        {doctor.field_of_concentration && <p>Focus: {doctor.field_of_concentration}</p>}
+                        <p>Available: {doctor.available_days || 'Not specified'}</p>
+                      </div>
+
+                      {doctor.chambers?.[0] && (
+                        <div className="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-600 ring-1 ring-slate-100">
+                          <p className="font-semibold text-slate-800">{doctor.chambers[0].chamber_name}</p>
+                          <p className="mt-1 line-clamp-1">{doctor.chambers[0].chamber_address}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col justify-between border-t border-slate-100 bg-slate-50 p-5 lg:border-l lg:border-t-0 lg:p-6">
+                      <div>
+                        <p className="text-sm font-medium text-slate-500">Consultation fee</p>
+                        <p className="mt-1 text-3xl font-bold text-emerald-700">${doctor.fees}</p>
+                        <p className="mt-2 text-sm text-slate-500">Book a chamber visit and manage it from your dashboard.</p>
+                      </div>
+
+                      <div className="mt-6 grid gap-3">
+                        <Link href={`/doctors/${doctor.id}`} className="rounded-lg bg-teal-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-teal-600/20 transition hover:-translate-y-0.5 hover:bg-teal-700">
                           View & Book
                         </Link>
-                        <Link href={`/doctors/${doctor.id}`} className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-                          Profile
+                        <Link href={`/doctors/${doctor.id}`} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+                          View Profile
                         </Link>
                       </div>
                     </div>
