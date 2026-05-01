@@ -246,28 +246,28 @@ function DoctorsContent() {
               </button>
             </div>
           ) : (
-            <div className="grid w-full gap-6 md:grid-cols-2 2xl:grid-cols-3">
+            <div className="grid w-full gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {doctors.map((doctor) => (
                 <article key={doctor.id} className="group relative overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/10">
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-teal-500 to-emerald-400 opacity-0 transition group-hover:opacity-100" />
                   <div className="flex h-full flex-col">
-                    <Link href={`/doctors/${doctor.id}`} className="block h-72 overflow-hidden bg-slate-100">
+                    <Link href={`/doctors/${doctor.id}`} className="block h-48 overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
                       {doctor.image ? (
-                        <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                        <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-contain object-top p-2 transition duration-500 group-hover:scale-105" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-blue-600 text-6xl font-bold text-white">
+                        <div className="flex h-full w-full items-center justify-center bg-blue-600 text-5xl font-bold text-white">
                           {doctor.name.charAt(0)}
                         </div>
                       )}
                     </Link>
 
-                    <div className="flex flex-1 flex-col p-6">
+                    <div className="flex flex-1 flex-col p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <Link href={`/doctors/${doctor.id}`} className="text-xl font-bold text-slate-950 hover:text-blue-700">
+                          <Link href={`/doctors/${doctor.id}`} className="text-lg font-bold text-slate-950 hover:text-blue-700">
                             {doctor.name}
                           </Link>
-                          <p className="mt-1 font-medium text-blue-600">{doctor.specialty}</p>
+                          <p className="mt-1 text-sm font-medium text-blue-600">{doctor.specialty}</p>
                         </div>
                         <div className="shrink-0 rounded-lg bg-emerald-50 px-3 py-2 text-right ring-1 ring-emerald-100">
                           <p className="text-xs text-emerald-700">Fee</p>
@@ -275,13 +275,13 @@ function DoctorsContent() {
                         </div>
                       </div>
 
-                      <div className="mt-4 space-y-2 text-sm text-slate-600">
+                      <div className="mt-3 line-clamp-3 space-y-1 text-sm text-slate-600">
                         {doctor.bmdc_reg_no && <p>BMDC Reg: {doctor.bmdc_reg_no}</p>}
                         <p>{doctor.qualifications || 'No qualifications listed'}</p>
                         {doctor.field_of_concentration && <p>Focus: {doctor.field_of_concentration}</p>}
                       </div>
 
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
                           {doctor.available_days || 'Availability not specified'}
                         </span>
@@ -295,11 +295,11 @@ function DoctorsContent() {
                         )}
                       </div>
 
-                      <div className="mt-auto flex gap-3 pt-5">
-                        <Link href={`/doctors/${doctor.id}`} className="flex-1 rounded-lg bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
+                      <div className="mt-auto flex gap-2 pt-4">
+                        <Link href={`/doctors/${doctor.id}`} className="flex-1 rounded-lg bg-blue-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
                           View & Book
                         </Link>
-                        <Link href={`/doctors/${doctor.id}`} className="rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                        <Link href={`/doctors/${doctor.id}`} className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                           Profile
                         </Link>
                       </div>
