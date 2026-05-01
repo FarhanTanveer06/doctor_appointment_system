@@ -27,7 +27,6 @@ interface Doctor {
   image: string;
   gender?: string;
   bmdc_reg_no?: string;
-  id_no?: string;
   description?: string;
   field_of_concentration?: string;
   specializations?: string;
@@ -48,13 +47,13 @@ export default function DoctorProfile() {
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
   const [selectedChamber, setSelectedChamber] = useState<number | null>(null);
-  const [appointmentType, setAppointmentType] = useState<string>('new');
+  const [appointmentType, setAppointmentType] = useState('new');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmedAppointment, setConfirmedAppointment] = useState<any>(null);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [slotConflict, setSlotConflict] = useState<string | null>(null);
 
   const isOwnDoctorProfile = user?.role === 'doctor' && doctor?.user_id === user.id;
+  const selectedChamberData = doctor?.chambers?.find((chamber) => chamber.id === selectedChamber);
 
   useEffect(() => {
     fetchDoctor();
@@ -65,6 +64,12 @@ export default function DoctorProfile() {
       setSelectedChamber(doctor.chambers[0].id);
     }
   }, [doctor, selectedChamber]);
+
+  useEffect(() => {
+    if (doctor) {
+      generateTimeSlots();
+    }
+  }, [selectedChamber, doctor]);
 
   const fetchDoctor = async () => {
     try {
@@ -77,21 +82,19 @@ export default function DoctorProfile() {
     }
   };
 
-  // Generate available time slots based on chamber or doctor settings
   const generateTimeSlots = () => {
     const slots: string[] = [];
     let startHour = 9;
     let endHour = 23;
-    
-    // If chamber is selected, use chamber times
+
     if (selectedChamber && doctor?.chambers) {
-      const chamber = doctor.chambers.find(c => c.id === selectedChamber);
+      const chamber = doctor.chambers.find((item) => item.id === selectedChamber);
       if (chamber?.appointment_time_start && chamber?.appointment_time_end) {
         startHour = parseInt(chamber.appointment_time_start.split(':')[0]);
         endHour = parseInt(chamber.appointment_time_end.split(':')[0]);
       }
     }
-    
+
     for (let hour = startHour; hour < endHour; hour++) {
       slots.push(`${hour.toString().padStart(2, '0')}:00`);
       slots.push(`${hour.toString().padStart(2, '0')}:30`);
@@ -99,37 +102,9 @@ export default function DoctorProfile() {
     setAvailableSlots(slots);
   };
 
-  useEffect(() => {
-    if (doctor) {
-      generateTimeSlots();
-    }
-  }, [selectedChamber, doctor]);
-
   const handleChamberChange = (chamberId: number) => {
     setSelectedChamber(chamberId);
     setAppointmentTime('');
-    setSlotConflict(null);
-  };
-
-  const checkSlotAvailability = async (date: string, time: string) => {
-    if (!date || !time || !doctor) return;
-    
-    try {
-      setSlotConflict(null);
-      // Try to book - backend will check for conflicts
-      // We'll do a preview check
-    } catch (error: any) {
-      if (error.response?.status === 400) {
-        setSlotConflict(error.response.data.message);
-      }
-    }
-  };
-
-  const handleTimeChange = (time: string) => {
-    setAppointmentTime(time);
-    if (appointmentDate && time && doctor) {
-      checkSlotAvailability(appointmentDate, time);
-    }
   };
 
   const handleBooking = async () => {
@@ -137,17 +112,14 @@ export default function DoctorProfile() {
       router.push('/login?redirect=' + encodeURIComponent(`/doctors/${params.id}`));
       return;
     }
-
     if (isOwnDoctorProfile) {
       alert('You cannot book an appointment with yourself');
       return;
     }
-
     if (!appointmentDate || !appointmentTime) {
       alert('Please select date and time');
       return;
     }
-
     if (doctor?.chambers && doctor.chambers.length > 0 && !selectedChamber) {
       alert('Please select a chamber');
       return;
@@ -159,22 +131,17 @@ export default function DoctorProfile() {
         doctorId: doctor?.id,
         appointmentDate,
         appointmentTime,
-        appointmentType
+        appointmentType,
       };
-      
-      // Only add chamberId if a chamber is selected
       if (selectedChamber) {
         bookingData.chamberId = selectedChamber;
       }
-      
+
       const response = await api.post('/appointments', bookingData);
-      
       setConfirmedAppointment(response.data.appointment);
       setShowConfirmation(true);
     } catch (error: any) {
-      console.error('Booking error:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to book appointment';
-      alert(errorMessage);
+      alert(error.response?.data?.message || error.message || 'Failed to book appointment');
     } finally {
       setBooking(false);
     }
@@ -183,8 +150,7 @@ export default function DoctorProfile() {
   const getImageUrl = (imagePath: string | null | undefined): string | undefined => {
     if (!imagePath) return undefined;
     if (imagePath.startsWith('http')) return imagePath;
-    const baseUrl = API_URL.replace('/api', '');
-    return `${baseUrl}${imagePath}`;
+    return `${API_URL}${imagePath}`;
   };
 
   const getAppointmentTypeLabel = (type: string) => {
@@ -196,71 +162,56 @@ export default function DoctorProfile() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (!doctor) return <div className="p-8 text-center">Doctor not found</div>;
+  if (loading) return <div className="p-10 text-center text-slate-600">Loading...</div>;
+  if (!doctor) return <div className="p-10 text-center text-slate-600">Doctor not found</div>;
 
-  // Show confirmation modal
   if (showConfirmation && confirmedAppointment) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen bg-slate-50 px-4 py-10">
+        <div className="mx-auto max-w-3xl overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-slate-200">
+          <div className="bg-emerald-600 px-8 py-10 text-center text-white">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white text-emerald-600">
+              <svg className="h-9 w-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-2">Appointment Confirmed!</h2>
-            <p className="text-gray-600 mb-6">Your appointment has been booked successfully.</p>
-            
-            <div className="bg-gray-50 rounded-lg p-6 text-left mb-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Doctor</p>
-                  <p className="font-semibold">{doctor.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Specialty</p>
-                  <p className="font-semibold">{doctor.specialty}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Appointment Type</p>
-                  <p className="font-semibold">{getAppointmentTypeLabel(confirmedAppointment.appointment_type || appointmentType)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Date & Time</p>
-                  <p className="font-semibold">{confirmedAppointment.appointment_date} at {confirmedAppointment.appointment_time}</p>
-                </div>
-                {selectedChamber && doctor.chambers && (
-                  <div className="col-span-2">
-                    <p className="text-sm text-gray-500">Chamber</p>
-                    <p className="font-semibold">{doctor.chambers.find(c => c.id === selectedChamber)?.chamber_name}</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-sm text-gray-500">Consultation Fee</p>
-                  <p className="font-semibold text-green-600">${doctor.fees}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Status</p>
-                  <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                    {confirmedAppointment.status || 'Pending'}
-                  </span>
-                </div>
+            <h1 className="text-3xl font-bold">Appointment booked</h1>
+            <p className="mt-2 text-emerald-50">Your request is now waiting for doctor confirmation.</p>
+          </div>
+
+          <div className="grid gap-4 p-6 sm:grid-cols-2">
+            {[
+              ['Doctor', doctor.name],
+              ['Specialty', doctor.specialty],
+              ['Visit type', getAppointmentTypeLabel(confirmedAppointment.appointment_type || appointmentType)],
+              ['Date and time', `${confirmedAppointment.appointment_date} at ${confirmedAppointment.appointment_time}`],
+              ['Chamber', selectedChamberData?.chamber_name || 'Not selected'],
+              ['Fee', `$${doctor.fees}`],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-lg bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">{label}</p>
+                <p className="mt-1 font-semibold text-slate-950">{value}</p>
               </div>
-            </div>
-            
-            <div className="flex gap-4">
-              <button
-                onClick={() => router.push(user?.role === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard')}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700"
-              >
-                {user?.role === 'doctor' ? 'View My Visits' : 'View My Appointments'}
-              </button>
-              <button onClick={() => { setShowConfirmation(false); setAppointmentDate(''); setAppointmentTime(''); }} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300">
-                Book Another
-              </button>
-            </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50 p-6 sm:flex-row">
+            <button
+              onClick={() => router.push(user?.role === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard')}
+              className="flex-1 rounded-lg bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700"
+            >
+              {user?.role === 'doctor' ? 'View My Visits' : 'View My Appointments'}
+            </button>
+            <button
+              onClick={() => {
+                setShowConfirmation(false);
+                setAppointmentDate('');
+                setAppointmentTime('');
+              }}
+              className="flex-1 rounded-lg border border-slate-300 bg-white py-3 font-semibold text-slate-700 hover:bg-slate-100"
+            >
+              Book Another
+            </button>
           </div>
         </div>
       </div>
@@ -268,275 +219,187 @@ export default function DoctorProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden max-w-5xl mx-auto">
-          {/* Doctor Image & Basic Info */}
-          <div className="md:flex">
-            <div className="md:w-1/3">
-              <div className="h-64 bg-gray-200 relative">
-                {doctor.image ? (
-                  <img src={getImageUrl(doctor.image)} alt={doctor.name} className="w-full h-full object-contain bg-gray-100" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-blue-500 text-white text-6xl font-bold">
-                    {doctor.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="md:w-2/3 p-6">
-              <h1 className="text-3xl font-bold mb-1">{doctor.name}</h1>
-              <p className="text-xl text-blue-600 mb-2">{doctor.specialty}</p>
-              <p className="text-gray-600 mb-4">{doctor.qualifications || 'Not specified'}</p>
-              
-              {/* Registration Info */}
-              <div className="flex gap-4 mb-4 text-sm">
-                {doctor.bmdc_reg_no && (
-                  <span className="bg-gray-100 px-3 py-1 rounded">BMDC: {doctor.bmdc_reg_no}</span>
-                )}
-                {doctor.gender && (
-                  <span className="bg-gray-100 px-3 py-1 rounded">{doctor.gender}</span>
-                )}
-              </div>
-              
-              <p className="text-2xl font-bold text-green-600">${doctor.fees} <span className="text-sm text-gray-500 font-normal">per visit</span></p>
+    <div className="min-h-screen bg-slate-50">
+      <section className="bg-slate-950 px-4 py-10 text-white">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[320px_1fr] lg:px-8">
+          <div className="overflow-hidden rounded-lg bg-white/10 ring-1 ring-white/10">
+            <div className="h-80 bg-slate-800">
+              {doctor.image ? (
+                <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-7xl font-bold text-blue-200">
+                  {doctor.name.charAt(0)}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Description */}
-          {doctor.description && (
-            <div className="p-6 border-t">
-              <h2 className="text-xl font-semibold mb-2">About</h2>
-              <p className="text-gray-600">{doctor.description}</p>
+          <div className="flex flex-col justify-center">
+            <div className="mb-4 flex flex-wrap gap-2">
+              <span className="rounded-full bg-blue-500/20 px-3 py-1 text-sm font-medium text-blue-100">{doctor.specialty}</span>
+              {doctor.gender && <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-slate-200">{doctor.gender}</span>}
+              {doctor.bmdc_reg_no && <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-slate-200">BMDC {doctor.bmdc_reg_no}</span>}
             </div>
-          )}
-
-          {/* Professional Info */}
-          {(doctor.field_of_concentration || doctor.specializations || doctor.work_experience || doctor.education) && (
-            <div className="p-6 border-t">
-              <h2 className="text-xl font-semibold mb-4">Professional Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {doctor.field_of_concentration && (
-                  <div>
-                    <h3 className="font-medium text-gray-700">Field of Concentration</h3>
-                    <p className="text-gray-600">{doctor.field_of_concentration}</p>
-                  </div>
-                )}
-                {doctor.specializations && (
-                  <div>
-                    <h3 className="font-medium text-gray-700">Specializations</h3>
-                    <p className="text-gray-600">{doctor.specializations}</p>
-                  </div>
-                )}
-                {doctor.work_experience && (
-                  <div className="md:col-span-2">
-                    <h3 className="font-medium text-gray-700">Work Experience</h3>
-                    <p className="text-gray-600 whitespace-pre-line">{doctor.work_experience}</p>
-                  </div>
-                )}
-                {doctor.education && (
-                  <div className="md:col-span-2">
-                    <h3 className="font-medium text-gray-700">Education</h3>
-                    <p className="text-gray-600 whitespace-pre-line">{doctor.education}</p>
-                  </div>
-                )}
+            <h1 className="text-4xl font-bold md:text-5xl">{doctor.name}</h1>
+            <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-300">{doctor.qualifications || 'Specialist consultant'}</p>
+            <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
+              <div className="rounded-lg bg-white/10 p-4">
+                <p className="text-sm text-slate-300">Consultation fee</p>
+                <p className="mt-1 text-2xl font-bold text-emerald-300">${doctor.fees}</p>
               </div>
-            </div>
-          )}
-
-          {/* Main Content: Left - Doctor Info, Right - Chamber & Booking */}
-          <div className="p-6 border-t">
-            <div className="md:flex gap-6">
-              {/* Left Column - Doctor Info (Chambers moved to right side) */}
-              <div className="md:w-2/3">
-                {/* Chambers - Now on the right side */}
-                {doctor.chambers && doctor.chambers.length > 0 && (
-                  <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Chamber Locations</h2>
-                    <div className="space-y-3">
-                      {doctor.chambers.map((chamber, index) => (
-                        <div 
-                          key={index} 
-                          onClick={() => handleChamberChange(chamber.id)}
-                          className={`bg-gray-50 p-4 rounded-lg cursor-pointer transition-all ${
-                            selectedChamber === chamber.id 
-                              ? 'ring-2 ring-blue-500 bg-blue-50' 
-                              : 'hover:bg-gray-100'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-semibold">{chamber.chamber_name}</h3>
-                              <p className="text-gray-600 text-sm">{chamber.chamber_address}</p>
-                              <div className="mt-2 text-sm text-gray-500">
-                                <p>Available: {chamber.available_days || 'Not specified'}</p>
-                                {chamber.appointment_time_start && chamber.appointment_time_end && (
-                                  <p>Time: {chamber.appointment_time_start} - {chamber.appointment_time_end}</p>
-                                )}
-                              </div>
-                            </div>
-                            {selectedChamber === chamber.id && (
-                              <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">Selected</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* If no chambers, show message */}
-                {(!doctor.chambers || doctor.chambers.length === 0) && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                    <p className="text-yellow-800">No chamber information available. Please contact the doctor directly.</p>
-                  </div>
-                )}
+              <div className="rounded-lg bg-white/10 p-4">
+                <p className="text-sm text-slate-300">Chambers</p>
+                <p className="mt-1 text-2xl font-bold">{doctor.chambers?.length || 0}</p>
               </div>
-
-              {/* Right Column - Booking Section */}
-              <div className="md:w-1/3">
-                <div className="bg-gray-50 rounded-lg p-6 sticky top-4">
-                  <h2 className="text-xl font-semibold mb-4">Book Appointment</h2>
-                  
-                  {/* Appointment Type Selection */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">Appointment Type</label>
-                    <div className="space-y-2">
-                      {[
-                        { value: 'new', label: 'New Patient', desc: 'First time visit' },
-                        { value: 'followup', label: 'Follow-up', desc: 'Review previous treatment' },
-                        { value: 'report', label: 'Report Show', desc: 'Show test reports' }
-                      ].map((type) => (
-                        <label
-                          key={type.value}
-                          className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
-                            appointmentType === type.value
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="appointmentType"
-                            value={type.value}
-                            checked={appointmentType === type.value}
-                            onChange={(e) => setAppointmentType(e.target.value)}
-                            className="mr-3"
-                          />
-                          <div>
-                            <p className="font-medium text-sm">{type.label}</p>
-                            <p className="text-xs text-gray-500">{type.desc}</p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Chamber Selection (if multiple chambers) */}
-                  {doctor.chambers && doctor.chambers.length > 1 && (
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium mb-2">Select Chamber</label>
-                      <select
-                        value={selectedChamber || ''}
-                        onChange={(e) => handleChamberChange(Number(e.target.value))}
-                        className="w-full border rounded-lg px-3 py-2"
-                      >
-                        <option value="">Select a chamber</option>
-                        {doctor.chambers.map((chamber) => (
-                          <option key={chamber.id} value={chamber.id}>
-                            {chamber.chamber_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  {/* Date Selection */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">Select Date</label>
-                    <input
-                      type="date"
-                      value={appointmentDate}
-                      onChange={(e) => setAppointmentDate(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2"
-                      min={new Date().toISOString().split('T')[0]}
-                    />
-                  </div>
-
-                  {/* Time Selection */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">Select Time</label>
-                    {availableSlots.length > 0 ? (
-                      <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
-                        {availableSlots.map((slot) => (
-                          <button
-                            key={slot}
-                            onClick={() => handleTimeChange(slot)}
-                            className={`py-2 px-1 text-sm rounded border transition-all ${
-                              appointmentTime === slot
-                                ? 'bg-blue-500 text-white border-blue-500'
-                                : 'bg-white border-gray-200 hover:border-blue-300'
-                            }`}
-                          >
-                            {slot}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <input
-                        type="time"
-                        value={appointmentTime}
-                        onChange={(e) => setAppointmentTime(e.target.value)}
-                        className="w-full border rounded-lg px-3 py-2"
-                      />
-                    )}
-                  </div>
-
-                  {/* Slot Conflict Warning */}
-                  {slotConflict && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-red-600 text-sm">{slotConflict}</p>
-                    </div>
-                  )}
-
-                  {/* Booking Summary */}
-                  {appointmentDate && appointmentTime && (
-                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-800">
-                        <strong>Selected:</strong> {appointmentDate} at {appointmentTime}
-                      </p>
-                      <p className="text-sm text-blue-600">
-                        Type: {getAppointmentTypeLabel(appointmentType)}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Book Button */}
-                  <button
-                    onClick={handleBooking}
-                    disabled={isOwnDoctorProfile || booking || !appointmentDate || !appointmentTime || (doctor.chambers && doctor.chambers.length > 0 && !selectedChamber)}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
-                  >
-                    {isOwnDoctorProfile ? 'Cannot Book Yourself' : booking ? 'Booking...' : 'Confirm Booking'}
-                  </button>
-
-                  {isOwnDoctorProfile && (
-                    <p className="text-sm text-gray-500 mt-3 text-center">
-                      You can book other doctors, but not your own profile.
-                    </p>
-                  )}
-
-                  {!user && (
-                    <p className="text-sm text-gray-500 mt-3 text-center">
-                      Please <Link href="/login" className="text-blue-600 hover:underline">login</Link> to book an appointment
-                    </p>
-                  )}
-                </div>
+              <div className="rounded-lg bg-white/10 p-4">
+                <p className="text-sm text-slate-300">Availability</p>
+                <p className="mt-1 truncate font-semibold">{doctor.available_days || 'Flexible'}</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[1fr_420px] lg:px-8">
+        <div className="space-y-6">
+          {doctor.description && (
+            <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <h2 className="text-xl font-bold text-slate-950">About</h2>
+              <p className="mt-3 leading-7 text-slate-600">{doctor.description}</p>
+            </div>
+          )}
+
+          {(doctor.field_of_concentration || doctor.specializations || doctor.work_experience || doctor.education) && (
+            <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <h2 className="text-xl font-bold text-slate-950">Professional Information</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {[
+                  ['Field of Concentration', doctor.field_of_concentration],
+                  ['Specializations', doctor.specializations],
+                  ['Work Experience', doctor.work_experience],
+                  ['Education', doctor.education],
+                ].filter(([, value]) => value).map(([label, value]) => (
+                  <div key={label} className="rounded-lg bg-slate-50 p-4">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 whitespace-pre-line text-slate-600">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h2 className="text-xl font-bold text-slate-950">Chamber Locations</h2>
+            {doctor.chambers && doctor.chambers.length > 0 ? (
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {doctor.chambers.map((chamber) => (
+                  <button
+                    key={chamber.id}
+                    onClick={() => handleChamberChange(chamber.id)}
+                    className={`rounded-lg border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
+                      selectedChamber === chamber.id ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-100' : 'border-slate-200 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-semibold text-slate-950">{chamber.chamber_name}</h3>
+                        <p className="mt-2 text-sm leading-6 text-slate-600">{chamber.chamber_address}</p>
+                      </div>
+                      {selectedChamber === chamber.id && <span className="rounded-full bg-blue-600 px-2 py-1 text-xs font-semibold text-white">Selected</span>}
+                    </div>
+                    <div className="mt-4 rounded-md bg-slate-50 p-3 text-sm text-slate-600">
+                      <p>Days: {chamber.available_days || 'Not specified'}</p>
+                      {chamber.appointment_time_start && chamber.appointment_time_end && (
+                        <p>Time: {chamber.appointment_time_start} - {chamber.appointment_time_end}</p>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-4 rounded-lg bg-amber-50 p-4 text-amber-800">No chamber information available. Please contact the doctor directly.</p>
+            )}
+          </div>
+        </div>
+
+        <aside className="lg:sticky lg:top-24 lg:self-start">
+          <div className="overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-slate-200">
+            <div className="bg-blue-600 p-6 text-white">
+              <h2 className="text-2xl font-bold">Book Appointment</h2>
+              <p className="mt-2 text-blue-100">Select your visit type, date, and chamber slot.</p>
+            </div>
+
+            <div className="space-y-6 p-6">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Appointment Type</label>
+                <div className="grid gap-2">
+                  {[
+                    { value: 'new', label: 'New Patient', desc: 'First time visit' },
+                    { value: 'followup', label: 'Follow-up', desc: 'Review previous treatment' },
+                    { value: 'report', label: 'Report Show', desc: 'Show test reports' },
+                  ].map((type) => (
+                    <label key={type.value} className={`flex cursor-pointer gap-3 rounded-lg border p-3 ${appointmentType === type.value ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`}>
+                      <input type="radio" name="appointmentType" value={type.value} checked={appointmentType === type.value} onChange={(e) => setAppointmentType(e.target.value)} />
+                      <span>
+                        <span className="block font-semibold text-slate-900">{type.label}</span>
+                        <span className="text-sm text-slate-500">{type.desc}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {doctor.chambers && doctor.chambers.length > 1 && (
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">Selected Chamber</label>
+                  <select value={selectedChamber || ''} onChange={(e) => handleChamberChange(Number(e.target.value))} className="w-full rounded-lg border border-slate-300 px-3 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                    <option value="">Choose a chamber</option>
+                    {doctor.chambers.map((chamber) => (
+                      <option key={chamber.id} value={chamber.id}>{chamber.chamber_name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Date</label>
+                <input type="date" value={appointmentDate} onChange={(e) => setAppointmentDate(e.target.value)} min={new Date().toISOString().split('T')[0]} className="w-full rounded-lg border border-slate-300 px-3 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">Time</label>
+                <div className="grid max-h-56 grid-cols-3 gap-2 overflow-y-auto pr-1">
+                  {availableSlots.map((slot) => (
+                    <button key={slot} onClick={() => setAppointmentTime(slot)} className={`rounded-lg border py-2 text-sm font-medium transition ${appointmentTime === slot ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'}`}>
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {(appointmentDate || appointmentTime || selectedChamberData) && (
+                <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+                  <p className="font-semibold text-slate-950">Appointment Summary</p>
+                  <p className="mt-2">Date: {appointmentDate || 'Not selected'}</p>
+                  <p>Time: {appointmentTime || 'Not selected'}</p>
+                  <p>Chamber: {selectedChamberData?.chamber_name || 'Not selected'}</p>
+                </div>
+              )}
+
+              <button
+                onClick={handleBooking}
+                disabled={isOwnDoctorProfile || booking || !appointmentDate || !appointmentTime || (doctor.chambers && doctor.chambers.length > 0 && !selectedChamber)}
+                className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+              >
+                {isOwnDoctorProfile ? 'Cannot Book Yourself' : booking ? 'Booking...' : 'Confirm Booking'}
+              </button>
+
+              {isOwnDoctorProfile && <p className="text-center text-sm text-slate-500">You can book other doctors, but not your own profile.</p>}
+              {!user && <p className="text-center text-sm text-slate-500">Please <Link href="/login" className="font-semibold text-blue-600">login</Link> to book an appointment.</p>}
+            </div>
+          </div>
+        </aside>
+      </section>
     </div>
   );
 }

@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Doctor = require('../models/Doctor');
+const Patient = require('../models/Patient');
 const { JWT_SECRET } = require('../middleware/auth');
 
 const register = async (req, res) => {
@@ -22,6 +23,8 @@ const register = async (req, res) => {
       }
       const image = req.file ? `/uploads/${req.file.filename}` : null;
       await Doctor.create(userId, specialty, qualifications, fees, availableDays, image, gender);
+    } else if (role === 'patient') {
+      await Patient.ensure(userId);
     }
 
     const token = jwt.sign({ id: userId, role }, JWT_SECRET, { expiresIn: '7d' });
@@ -75,6 +78,10 @@ const getMe = async (req, res) => {
     if (user.role === 'doctor') {
       const doctor = await Doctor.findByUserId(user.id);
       extraData = { doctor };
+    } else if (user.role === 'patient') {
+      await Patient.ensure(user.id);
+      const patient = await Patient.findByUserId(user.id);
+      extraData = { patient };
     }
 
     res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, ...extraData });
