@@ -6,13 +6,14 @@ const upload = require('../middleware/upload');
 
 router.get('/', getAllDoctors);
 router.post('/', auth, adminOnly, upload.single('image'), addDoctor);
-router.get('/:id', getDoctorById);
-router.put('/:id', auth, adminOnly, upload.single('image'), updateDoctor);
-router.delete('/:id', auth, adminOnly, deleteDoctor);
 
 // Doctor's own profile route
 router.put('/profile/update', auth, upload.single('image'), updateDoctorProfile);
 router.put('/profile/image', auth, upload.single('image'), updateDoctorImage);
 router.get('/profile/me', auth, getDoctorProfile);
+
+router.get('/:id', getDoctorById);
+router.put('/:id', auth, adminOnly, upload.single('image'), updateDoctor);
+router.delete('/:id', auth, adminOnly, deleteDoctor);
 
 module.exports = router;

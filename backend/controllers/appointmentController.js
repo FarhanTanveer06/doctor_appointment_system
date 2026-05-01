@@ -3,21 +3,40 @@ const Doctor = require('../models/Doctor');
 
 const bookAppointment = async (req, res) => {
   try {
-    const { doctorId, appointmentDate, appointmentTime } = req.body;
+    const { doctorId, appointmentDate, appointmentTime, appointmentType = 'new', chamberId } = req.body;
     const patientId = req.user.id;
+
+    if (!doctorId || !appointmentDate || !appointmentTime) {
+      return res.status(400).json({ message: 'Please provide doctor, date and time' });
+    }
 
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
-    const id = await Appointment.create(patientId, doctorId, appointmentDate, appointmentTime);
+    if (req.user.role === 'doctor' && doctor.user_id === req.user.id) {
+      return res.status(400).json({ message: 'You cannot book an appointment with yourself' });
+    }
+
+    // Check for slot conflict
+    try {
+      const conflict = await Appointment.checkSlotConflict(doctorId, appointmentDate, appointmentTime);
+      if (conflict) {
+        return res.status(400).json({ message: 'This time slot is already booked. Please select a different time.' });
+      }
+    } catch (conflictError) {
+      console.error('Slot check error:', conflictError);
+      // Continue if slot check fails
+    }
+
+    const id = await Appointment.create(patientId, doctorId, appointmentDate, appointmentTime, appointmentType, chamberId);
     const appointment = await Appointment.findById(id);
 
     res.status(201).json({ message: 'Appointment booked', appointment });
   } catch (error) {
     console.error('BookAppointment error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Failed to book appointment. Please try again.' });
   }
 };
 
@@ -71,7 +90,12 @@ const cancelAppointment = async (req, res) => {
       return res.status(404).json({ message: 'Appointment not found' });
     }
 
-    if (req.user.role === 'patient' && appointment.patient_id !== req.user.id) {
+    if (appointment.patient_id === req.user.id) {
+      await Appointment.updateStatus(req.params.id, 'cancelled');
+      return res.json({ message: 'Appointment cancelled' });
+    }
+
+    if (req.user.role === 'patient') {
       return res.status(403).json({ message: 'Not authorized' });
     }
 

@@ -31,6 +31,7 @@ const getDoctorDashboard = async (req, res) => {
 
     const stats = await Appointment.getStats(doctor.id);
     const appointments = await Appointment.findByDoctor(doctor.id);
+    const visitingAppointments = await Appointment.findByPatient(req.user.id);
 
     res.json({
       totalAppointments: stats.total,
@@ -38,7 +39,8 @@ const getDoctorDashboard = async (req, res) => {
       pendingAppointments: stats.pending,
       cancelledAppointments: stats.cancelled,
       totalEarnings: stats.total_earnings || 0,
-      appointments: appointments.slice(0, 10)
+      appointments: appointments.slice(0, 10),
+      visitingAppointments: visitingAppointments.slice(0, 10)
     });
   } catch (error) {
     console.error('GetDoctorDashboard error:', error);

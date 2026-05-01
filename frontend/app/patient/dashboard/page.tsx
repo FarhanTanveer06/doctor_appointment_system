@@ -26,13 +26,18 @@ export default function PatientDashboard() {
     if (!authLoading && !user) {
       router.push('/login');
     }
+    if (!authLoading && user?.role === 'doctor') {
+      router.push('/doctor/dashboard');
+    }
   }, [user, authLoading, router]);
 
   useEffect(() => {
     if (user?.role === 'patient') {
       fetchAppointments();
+    } else if (!authLoading && user) {
+      setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchAppointments = async () => {
     try {

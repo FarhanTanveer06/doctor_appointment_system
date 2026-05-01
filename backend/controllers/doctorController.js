@@ -18,7 +18,9 @@ const getDoctorById = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
     }
-    res.json(doctor);
+    // Get chambers for this doctor
+    const chambers = await Doctor.getChambers(doctor.id);
+    res.json({ ...doctor, chambers });
   } catch (error) {
     console.error('GetDoctorById error:', error);
     res.status(500).json({ message: 'Server error' });
