@@ -243,7 +243,7 @@ export default function PatientProfilePage() {
                     ),
                   },
                 ].map((field) => (
-                  <div key={field.key} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <div key={field.key} className="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-semibold text-slate-950">{field.label}</p>

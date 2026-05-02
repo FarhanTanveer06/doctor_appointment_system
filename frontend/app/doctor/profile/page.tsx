@@ -293,19 +293,19 @@ export default function DoctorProfilePage() {
     if (isEditing) {
       return (
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
           {type === 'textarea' ? (
             <textarea
               value={formData[field as keyof typeof formData] as string}
               onChange={(e) => setFormData(prev => ({ ...prev, [field]: e.target.value }))}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
               rows={3}
             />
           ) : type === 'select' && options ? (
             <select
               value={formData[field as keyof typeof formData] as string}
               onChange={(e) => setFormData(prev => ({ ...prev, [field]: e.target.value }))}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
             >
               {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
@@ -314,7 +314,7 @@ export default function DoctorProfilePage() {
               type={type}
               value={formData[field as keyof typeof formData] as string}
               onChange={(e) => setFormData(prev => ({ ...prev, [field]: type === 'number' ? parseFloat(e.target.value) : e.target.value }))}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
             />
           )}
           <div className="flex gap-2 mt-2">
@@ -327,7 +327,7 @@ export default function DoctorProfilePage() {
             </button>
             <button
               onClick={cancelEditing}
-              className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+              className="bg-slate-500 text-white px-3 py-1 rounded text-sm hover:bg-slate-600"
             >
               Cancel
             </button>
@@ -338,14 +338,14 @@ export default function DoctorProfilePage() {
 
     return (
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
         <div className="flex items-center gap-2">
-          <div className="flex-1 px-3 py-2 bg-gray-50 border rounded text-gray-800">
+          <div className="flex-1 rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800">
             {displayValue}
           </div>
           <button
             onClick={() => startEditing(field)}
-            className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 whitespace-nowrap"
+            className="rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400 whitespace-nowrap"
           >
             Edit
           </button>
@@ -355,9 +355,9 @@ export default function DoctorProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+    <div className="min-h-screen bg-slate-100 py-10">
+      <div className="mx-auto max-w-screen-2xl px-6">
+        <h1 className="text-4xl font-bold tracking-tight text-slate-950 mb-8">My Profile</h1>
 
         {message && (
           <div className={`p-4 mb-4 rounded ${message.includes('success') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -365,10 +365,10 @@ export default function DoctorProfilePage() {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-4xl p-8 shadow-[0_28px_80px_-35px_rgba(15,23,42,0.25)]">
           {/* Profile Image Section */}
           <div className="mb-8 flex flex-col items-center border-b pb-8">
-            <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4">
+            <div className="w-36 h-36 rounded-full overflow-hidden bg-slate-200 mb-4">
               {imagePreview ? (
                 <img src={imagePreview} alt="Profile" className="w-full h-full object-contain" />
               ) : (
@@ -380,7 +380,7 @@ export default function DoctorProfilePage() {
               )}
             </div>
             <div className="flex gap-2">
-              <label className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+              <label className="cursor-pointer rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400 transition">
                 <span>Change Photo</span>
                 <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
               </label>
@@ -414,13 +414,13 @@ export default function DoctorProfilePage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex mb-6 border-b">
+          <div className="flex mb-6 border-b border-slate-200">
             {['basic', 'professional', 'chambers'].map(tab => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => { setActiveTab(tab); setEditingField(null); }}
-                className={`px-4 py-2 capitalize ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-600 font-semibold' : 'text-gray-600'}`}
+                className={`px-4 py-2 capitalize ${activeTab === tab ? 'border-b-2 border-amber-500 text-amber-600 font-semibold' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 {tab === 'basic' ? 'Basic Info' : tab === 'professional' ? 'Professional Info' : 'Chambers'}
               </button>
@@ -438,17 +438,17 @@ export default function DoctorProfilePage() {
               {renderField('Consultation Fees ($)', 'fees', formData.fees.toString(), 'number')}
               
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Available Days</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Available Days</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {days.map(day => (
-                    <span key={day} className={`px-3 py-1 rounded text-sm ${formData.available_days.includes(day) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}>
+                    <span key={day} className={`px-3 py-1 rounded-full text-sm ${formData.available_days.includes(day) ? 'bg-amber-500 text-slate-950' : 'bg-slate-200 text-slate-600'}`}>
                       {day.substring(0, 3)}
                     </span>
                   ))}
                 </div>
                 <button
                   onClick={() => startEditing('available_days')}
-                  className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                  className="rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-400 transition"
                 >
                   Edit
                 </button>
@@ -474,38 +474,43 @@ export default function DoctorProfilePage() {
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Chamber Locations</h3>
-                <button type="button" onClick={addChamber} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">+ Add Chamber</button>
+                <button type="button" onClick={addChamber} className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-emerald-400 transition">+ Add Chamber</button>
               </div>
               {formData.chambers.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No chambers added yet. Click "Add Chamber" to add your chamber locations.</p>
+                <p className="text-slate-500 text-center py-4">No chambers added yet. Click "Add Chamber" to add your chamber locations.</p>
               ) : (
                 formData.chambers.map((chamber, index) => (
-                  <div key={index} className="border rounded-lg p-4 mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium">Chamber {index + 1}</h4>
-                      <button type="button" onClick={() => removeChamber(index)} className="text-red-500 hover:text-red-700">Remove</button>
+                  <div key={index} className="rounded-4xl border border-slate-200 bg-slate-50 p-6 mb-4 shadow-sm">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                      <div>
+                        <p className="text-lg font-semibold text-slate-950">Chamber {index + 1}</p>
+                        <p className="mt-2 text-sm text-slate-600">Enter chamber details and availability for patient bookings.</p>
+                      </div>
+                      <button type="button" onClick={() => removeChamber(index)} className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition">
+                        Remove
+                      </button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="mt-5 grid gap-4 md:grid-cols-2">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Chamber Name</label>
-                        <input type="text" value={chamber.chamber_name} onChange={(e) => handleChamberChange(index, 'chamber_name', e.target.value)} placeholder="e.g., Popular Diagnostic Center" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Chamber Name</label>
+                        <input type="text" value={chamber.chamber_name} onChange={(e) => handleChamberChange(index, 'chamber_name', e.target.value)} placeholder="e.g., Popular Diagnostic Center" className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <input type="text" value={chamber.chamber_address} onChange={(e) => handleChamberChange(index, 'chamber_address', e.target.value)} placeholder="e.g., House #12, Road #5, Dhanmondi, Dhaka" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                        <input type="text" value={chamber.chamber_address} onChange={(e) => handleChamberChange(index, 'chamber_address', e.target.value)} placeholder="e.g., House #12, Road #5, Dhanmondi, Dhaka" className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Available Days</label>
-                        <input type="text" value={chamber.available_days} onChange={(e) => handleChamberChange(index, 'available_days', e.target.value)} placeholder="e.g., Sat, Sun, Mon" className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Available Days</label>
+                        <input type="text" value={chamber.available_days} onChange={(e) => handleChamberChange(index, 'available_days', e.target.value)} placeholder="e.g., Sat, Sun, Mon" className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid gap-2 sm:grid-cols-2">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                          <input type="time" value={chamber.appointment_time_start} onChange={(e) => handleChamberChange(index, 'appointment_time_start', e.target.value)} className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <label className="block text-sm font-medium text-slate-700 mb-1">Start Time</label>
+                          <input type="time" value={chamber.appointment_time_start} onChange={(e) => handleChamberChange(index, 'appointment_time_start', e.target.value)} className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                          <input type="time" value={chamber.appointment_time_end} onChange={(e) => handleChamberChange(index, 'appointment_time_end', e.target.value)} className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <label className="block text-sm font-medium text-slate-700 mb-1">End Time</label>
+                          <input type="time" value={chamber.appointment_time_end} onChange={(e) => handleChamberChange(index, 'appointment_time_end', e.target.value)} className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-200" />
                         </div>
                       </div>
                     </div>
