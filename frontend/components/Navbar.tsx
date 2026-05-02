@@ -117,6 +117,9 @@ export default function Navbar() {
           <Link href="/doctors" className="rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 hover:text-emerald-300">
             All Doctors
           </Link>
+          <Link href="/assistant" className="rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 hover:text-emerald-300">
+            AI Assistant
+          </Link>
           <button onClick={() => handleNavClick('/contact', 'contact')} className="rounded-md px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 hover:text-emerald-300">
             Contact
           </button>
@@ -158,6 +161,9 @@ export default function Navbar() {
                       Manage Profile
                     </Link>
                   )}
+                  <Link href="/assistant" onClick={() => setShowDropdown(false)} className="block px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800/90">
+                    AI Assistant
+                  </Link>
                   <button onClick={handleLogout} className="block w-full px-4 py-3 text-left text-sm font-medium text-red-400 transition hover:bg-red-500/10">
                     Logout
                   </button>

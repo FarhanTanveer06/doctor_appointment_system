@@ -19,9 +19,9 @@ const heroSlides = [
   {
     image:
       'https://images.unsplash.com/photo-1580281657521-8b2d7ff421f2?auto=format&fit=crop&w=1200&q=80',
-    title: 'Book a Doctor\'s Appointment in Just 10 Minutes with Sasthya Seba',
+    title: 'Book a Doctor\'s Appointment in Just 10 Minutes with DocAssist',
     description:
-      'Say goodbye to endless phone calls and long queues. Book doctors appointments, video consultations, ambulance service, manage medical records, and more.',
+      'Say goodbye to endless phone calls and long queues. Book doctors appointments, manage medical records, and more.',
   },
   {
     image:
@@ -130,10 +130,10 @@ export default function Home() {
                 Book a doctor in 10 minutes
               </p>
               <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-white md:text-6xl">
-                Book a Doctor&apos;s Appointment in Just 10 Minutes with Sasthya Seba.
+                Book a Doctor&apos;s Appointment in Just 10 Minutes with DocAssist.
               </h1>
               <p className="max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-                Say goodbye to endless phone calls and long queues. Book doctors&apos; appointments, video consultations, ambulance service, manage medical records, and more.
+                Say goodbye to endless phone calls and long queues. Book doctors&apos; appointments, manage medical records, and more.
               </p>
 
               <div className="grid gap-4 sm:grid-cols-[1.4fr_0.6fr]">
@@ -155,7 +155,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {['Video Consultancy', 'Chamber Appointment', 'Doctor At Your Home', 'Ambulance Service', 'Domiciliary Service'].slice(0, 2).map((label) => (
+                  {['AI Health Assistant', 'Chamber Appointment', 'Doctor At Your Home', 'Ambulance Service'].slice(0, 2).map((label) => (
                     <div key={label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
                       {label}
                     </div>
@@ -268,45 +268,12 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-10 text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-500">Emergency services</p>
-              <h2 className="mt-3 text-3xl font-bold text-slate-950">We are ready to help at your emergency</h2>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              {[
-                ['AC Ambulance', 'Get ambulance within 30 minutes*', '24/7 affordable quality service'],
-                ['ICU Ambulance', 'Get ambulance within 30 minutes*', '24/7 affordable quality service'],
-                ['AIR Ambulance', 'Get ambulance within 60 minutes*', '24/7 affordable quality service'],
-              ].map(([title, subtitle, text]) => (
-                <div key={title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <p className="text-lg font-semibold text-slate-950">{title}</p>
-                  <p className="mt-3 text-sm text-slate-600">{subtitle}</p>
-                  <p className="mt-4 text-sm text-slate-500">{text}</p>
-                  <p className="mt-5 text-sm font-semibold text-emerald-600">Call: 01405600700</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section className="px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-500">Diagnostic care</p>
               <h2 className="mt-3 text-3xl font-bold text-slate-950">Get timely, cost-effective, and high quality diagnostic care</h2>
               <p className="mt-4 text-slate-600">Book tests with top labs, get sample pick up, and share reports with doctors online.</p>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {['CT Scan', 'Blood Tests', 'Endoscopy', 'Ultrasound', 'X-Ray', 'Microbiology'].map((label) => (
-                <div key={label} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <p className="text-lg font-semibold text-slate-950">{label}</p>
-                  <p className="mt-3 text-sm text-slate-600">Check Prices</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -316,8 +283,8 @@ export default function Home() {
             <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
                 <p className="text-sm uppercase tracking-[0.24em] text-emerald-300">Mobile App</p>
-                <h2 className="mt-3 text-3xl font-bold text-white">Get all the benefits of Sasthya Seba through our mobile app</h2>
-                <p className="mt-4 max-w-2xl text-slate-300">Book Appointment Online, Video Call With Doctor, Get Prescription Instantly, and manage all your health needs from one app.</p>
+                <h2 className="mt-3 text-3xl font-bold text-white">Get all the benefits of DocAssist through our mobile app</h2>
+                <p className="mt-4 max-w-2xl text-slate-300">Book Appointment Online, Get Prescription Instantly, and manage all your health needs from one app.</p>
                 <div className="mt-6 flex flex-wrap gap-4">
                   <button className="rounded-full bg-emerald-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400">
                     Get It On Google Play
@@ -333,8 +300,8 @@ export default function Home() {
                   <p className="mt-2 text-sm text-slate-300">Reserve a doctor visit or consultation in just a few taps.</p>
                 </div>
                 <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
-                  <p className="text-base font-semibold text-white">Video Call With Doctor</p>
-                  <p className="mt-2 text-sm text-slate-300">Secure online consultations with specialists across Bangladesh.</p>
+                  <p className="text-base font-semibold text-white">AI Health Assistant</p>
+                  <p className="mt-2 text-sm text-slate-300">Get instant health advice and doctor recommendations from our AI assistant.</p>
                 </div>
                 <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
                   <p className="text-base font-semibold text-white">Get Prescription Instantly</p>
@@ -349,15 +316,15 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-500">What people love</p>
-              <h2 className="mt-3 text-3xl font-bold text-slate-950">Why people love Sasthya Seba</h2>
+              <h2 className="mt-3 text-3xl font-bold text-slate-950">Why people love DocAssist</h2>
               <p className="mt-4 text-slate-600">We continuously improve our services based on the opinion of our users.</p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {[
                 'Very helpful. Far easier than doing same things on computer. Allows quick and easy search with speedy booking. Even maintains history of doctors visited. - Faiyaz-A-Chowdhury',
-                'Dear Fatema, “Thank you so much for your diligent follow up and especially for calling me back. It is very rare that someone from customer support for any company ever reverts. Reaffirms my faith in Sasthya Seba. - Israt-Mou',
-                'The service of Sasthya Seba is praiseworthy. When my grandmother was at critical moment, we were all worried to have a vehicle in that late night. - Labby Ahsan',
+                'Dear Fatema, Thank you so much for your diligent follow up and especially for calling me back. It is very rare that someone from customer support for any company ever reverts. Reaffirms my faith in DocAssist. - Israt-Mou',
+                'The service of DocAssist is praiseworthy. When my grandmother was at critical moment, we were all worried to have a vehicle in that late night. - Labby Ahsan',
               ].map((quote, index) => (
                 <div key={index} className="rounded-3xl border border-slate-200 p-6 shadow-sm">
                   <p className="text-sm leading-7 text-slate-700">{quote}</p>
@@ -373,7 +340,7 @@ export default function Home() {
               <p className="text-sm uppercase tracking-[0.24em] text-emerald-300">About DocAssist</p>
               <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">Your trusted healthcare platform</h2>
             </div>
-            <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
               <div>
                 <p className="text-lg leading-8 text-slate-300">
                   Welcome to DocAssist - your trusted platform for booking appointments with qualified healthcare professionals. We connect patients with doctors across various specialties including General Physicians, Dermatologists, Pediatricians, Neurologists, Gastroenterologists, and Cardiologists.
