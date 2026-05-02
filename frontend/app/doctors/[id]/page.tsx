@@ -221,46 +221,46 @@ export default function DoctorProfile() {
   return (
     <div className="min-h-screen bg-slate-50">
       <section className="bg-slate-950 px-4 py-10 text-white">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[320px_1fr] lg:px-8">
-          <div className="overflow-hidden rounded-lg bg-white/10 ring-1 ring-white/10">
-            <div className="h-80 bg-slate-800">
+        <div className="mx-auto grid max-w-screen-2xl gap-5 lg:grid-cols-[300px_1fr] lg:px-8">
+          <div className="overflow-hidden rounded-4xl bg-slate-900/90 ring-1 ring-white/10 shadow-2xl shadow-slate-950/30">
+            <div className="h-64 bg-slate-800">
               {doctor.image ? (
-                <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-cover" />
+                <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-cover object-top" />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-7xl font-bold text-blue-200">
+                <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-amber-200">
                   {doctor.name.charAt(0)}
                 </div>
               )}
             </div>
           </div>
 
-          <div className="flex flex-col justify-center">
-            <div className="mb-4 flex flex-wrap gap-2">
-              <span className="rounded-full bg-blue-500/20 px-3 py-1 text-sm font-medium text-blue-100">{doctor.specialty}</span>
-              {doctor.gender && <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-slate-200">{doctor.gender}</span>}
-              {doctor.bmdc_reg_no && <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-slate-200">BMDC {doctor.bmdc_reg_no}</span>}
+          <div className="flex flex-col justify-center gap-3">
+            <div className="mb-3 flex flex-wrap gap-2">
+              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-100 ring-1 ring-amber-100/40">{doctor.specialty}</span>
+              {doctor.gender && <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-slate-200">{doctor.gender}</span>}
+              {doctor.bmdc_reg_no && <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-slate-200">BMDC {doctor.bmdc_reg_no}</span>}
             </div>
-            <h1 className="text-4xl font-bold md:text-5xl">{doctor.name}</h1>
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-300">{doctor.qualifications || 'Specialist consultant'}</p>
-            <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-3">
-              <div className="rounded-lg bg-white/10 p-4">
-                <p className="text-sm text-slate-300">Consultation fee</p>
-                <p className="mt-1 text-2xl font-bold text-emerald-300">${doctor.fees}</p>
+            <h1 className="text-3xl font-bold md:text-4xl leading-tight">{doctor.name}</h1>
+            <p className="max-w-2xl text-sm leading-6 text-slate-300">{doctor.qualifications || 'Specialist consultant'}</p>
+            <div className="mt-5 grid gap-2 sm:grid-cols-3">
+              <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-3">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Consultation fee</p>
+                <p className="mt-1 text-xl font-semibold text-amber-300">${doctor.fees}</p>
               </div>
-              <div className="rounded-lg bg-white/10 p-4">
-                <p className="text-sm text-slate-300">Chambers</p>
-                <p className="mt-1 text-2xl font-bold">{doctor.chambers?.length || 0}</p>
+              <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-3">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Chambers</p>
+                <p className="mt-1 text-xl font-semibold text-white">{doctor.chambers?.length || 0}</p>
               </div>
-              <div className="rounded-lg bg-white/10 p-4">
-                <p className="text-sm text-slate-300">Availability</p>
-                <p className="mt-1 truncate font-semibold">{doctor.available_days || 'Flexible'}</p>
+              <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-3">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Availability</p>
+                <p className="mt-1 text-xl font-semibold text-white">{doctor.available_days || 'Flexible'}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[1fr_420px] lg:px-8">
+      <section className="mx-auto grid max-w-screen-2xl gap-8 px-4 py-10 lg:grid-cols-[1fr_420px] lg:px-8">
         <div className="space-y-6">
           {doctor.description && (
             <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
@@ -297,7 +297,7 @@ export default function DoctorProfile() {
                     key={chamber.id}
                     onClick={() => handleChamberChange(chamber.id)}
                     className={`rounded-lg border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
-                      selectedChamber === chamber.id ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-100' : 'border-slate-200 bg-white'
+                      selectedChamber === chamber.id ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-100' : 'border-slate-200 bg-white'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -305,7 +305,7 @@ export default function DoctorProfile() {
                         <h3 className="font-semibold text-slate-950">{chamber.chamber_name}</h3>
                         <p className="mt-2 text-sm leading-6 text-slate-600">{chamber.chamber_address}</p>
                       </div>
-                      {selectedChamber === chamber.id && <span className="rounded-full bg-blue-600 px-2 py-1 text-xs font-semibold text-white">Selected</span>}
+                      {selectedChamber === chamber.id && <span className="rounded-full bg-amber-600 px-2 py-1 text-xs font-semibold text-white">Selected</span>}
                     </div>
                     <div className="mt-4 rounded-md bg-slate-50 p-3 text-sm text-slate-600">
                       <p>Days: {chamber.available_days || 'Not specified'}</p>
@@ -323,10 +323,10 @@ export default function DoctorProfile() {
         </div>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-slate-200">
-            <div className="bg-blue-600 p-6 text-white">
+          <div className="overflow-hidden rounded-4xl bg-slate-100 shadow-2xl ring-1 ring-slate-200/80">
+            <div className="bg-slate-900 p-6 text-white">
               <h2 className="text-2xl font-bold">Book Appointment</h2>
-              <p className="mt-2 text-blue-100">Select your visit type, date, and chamber slot.</p>
+              <p className="mt-2 text-slate-300">Select your visit type, date, and chamber slot.</p>
             </div>
 
             <div className="space-y-6 p-6">
@@ -338,8 +338,8 @@ export default function DoctorProfile() {
                     { value: 'followup', label: 'Follow-up', desc: 'Review previous treatment' },
                     { value: 'report', label: 'Report Show', desc: 'Show test reports' },
                   ].map((type) => (
-                    <label key={type.value} className={`flex cursor-pointer gap-3 rounded-lg border p-3 ${appointmentType === type.value ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`}>
-                      <input type="radio" name="appointmentType" value={type.value} checked={appointmentType === type.value} onChange={(e) => setAppointmentType(e.target.value)} />
+                    <label key={type.value} className={`flex cursor-pointer gap-3 rounded-3xl border p-3 transition ${appointmentType === type.value ? 'border-amber-500 bg-amber-50' : 'border-slate-200 bg-white hover:border-amber-300'}`}>
+                      <input type="radio" name="appointmentType" value={type.value} checked={appointmentType === type.value} onChange={(e) => setAppointmentType(e.target.value)} className="mt-1" />
                       <span>
                         <span className="block font-semibold text-slate-900">{type.label}</span>
                         <span className="text-sm text-slate-500">{type.desc}</span>
@@ -352,7 +352,7 @@ export default function DoctorProfile() {
               {doctor.chambers && doctor.chambers.length > 1 && (
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-slate-700">Selected Chamber</label>
-                  <select value={selectedChamber || ''} onChange={(e) => handleChamberChange(Number(e.target.value))} className="w-full rounded-lg border border-slate-300 px-3 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                  <select value={selectedChamber || ''} onChange={(e) => handleChamberChange(Number(e.target.value))} className="w-full rounded-3xl border border-slate-300 px-4 py-3 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100">
                     <option value="">Choose a chamber</option>
                     {doctor.chambers.map((chamber) => (
                       <option key={chamber.id} value={chamber.id}>{chamber.chamber_name}</option>
@@ -363,14 +363,14 @@ export default function DoctorProfile() {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">Date</label>
-                <input type="date" value={appointmentDate} onChange={(e) => setAppointmentDate(e.target.value)} min={new Date().toISOString().split('T')[0]} className="w-full rounded-lg border border-slate-300 px-3 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+                <input type="date" value={appointmentDate} onChange={(e) => setAppointmentDate(e.target.value)} min={new Date().toISOString().split('T')[0]} className="w-full rounded-3xl border border-slate-300 px-4 py-3 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">Time</label>
                 <div className="grid max-h-56 grid-cols-3 gap-2 overflow-y-auto pr-1">
                   {availableSlots.map((slot) => (
-                    <button key={slot} onClick={() => setAppointmentTime(slot)} className={`rounded-lg border py-2 text-sm font-medium transition ${appointmentTime === slot ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'}`}>
+                    <button key={slot} onClick={() => setAppointmentTime(slot)} className={`rounded-3xl border py-2 text-sm font-medium transition ${appointmentTime === slot ? 'border-amber-600 bg-amber-600 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-amber-300'}`}>
                       {slot}
                     </button>
                   ))}
@@ -378,7 +378,7 @@ export default function DoctorProfile() {
               </div>
 
               {(appointmentDate || appointmentTime || selectedChamberData) && (
-                <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+                <div className="rounded-3xl bg-white p-4 text-sm text-slate-700 shadow-sm ring-1 ring-slate-200">
                   <p className="font-semibold text-slate-950">Appointment Summary</p>
                   <p className="mt-2">Date: {appointmentDate || 'Not selected'}</p>
                   <p>Time: {appointmentTime || 'Not selected'}</p>
@@ -389,13 +389,13 @@ export default function DoctorProfile() {
               <button
                 onClick={handleBooking}
                 disabled={isOwnDoctorProfile || booking || !appointmentDate || !appointmentTime || (doctor.chambers && doctor.chambers.length > 0 && !selectedChamber)}
-                className="w-full rounded-lg bg-blue-600 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+                className="w-full rounded-3xl bg-amber-600 py-3 font-semibold text-white shadow-sm transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:bg-slate-400"
               >
                 {isOwnDoctorProfile ? 'Cannot Book Yourself' : booking ? 'Booking...' : 'Confirm Booking'}
               </button>
 
               {isOwnDoctorProfile && <p className="text-center text-sm text-slate-500">You can book other doctors, but not your own profile.</p>}
-              {!user && <p className="text-center text-sm text-slate-500">Please <Link href="/login" className="font-semibold text-blue-600">login</Link> to book an appointment.</p>}
+              {!user && <p className="text-center text-sm text-slate-500">Please <Link href="/login" className="font-semibold text-amber-600">login</Link> to book an appointment.</p>}
             </div>
           </div>
         </aside>

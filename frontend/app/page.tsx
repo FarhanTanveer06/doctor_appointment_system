@@ -15,13 +15,45 @@ interface Doctor {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') : 'http://localhost:5000';
 
+const heroSlides = [
+  {
+    image:
+      'https://images.unsplash.com/photo-1580281657521-8b2d7ff421f2?auto=format&fit=crop&w=1200&q=80',
+    title: 'Book a Doctor\'s Appointment in Just 10 Minutes with Sasthya Seba',
+    description:
+      'Say goodbye to endless phone calls and long queues. Book doctors appointments, video consultations, ambulance service, manage medical records, and more.',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80',
+    title: 'Video Consultation and Home Care in One Place',
+    description:
+      'Connect with specialists instantly, book chamber appointments, or request a doctor visit at home with a few clicks.',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=1200&q=80',
+    title: 'Emergency Ambulance and Diagnostic Support',
+    description:
+      'Access 24/7 ambulance services, diagnostic home sample collection, and trusted medical support across Bangladesh.',
+  },
+];
+
 export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     fetchDoctors();
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
+    }, 7000);
+    return () => window.clearInterval(timer);
   }, []);
 
   const fetchDoctors = async () => {
@@ -35,7 +67,7 @@ export default function Home() {
 
   const specialties = useMemo(() => {
     const unique = new Set(doctors.map((doctor) => doctor.specialty).filter(Boolean));
-    return Array.from(unique).slice(0, 6);
+    return Array.from(unique).slice(0, 8);
   }, [doctors]);
 
   const handleSearch = () => {
@@ -51,155 +83,275 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      <section className="relative overflow-hidden bg-slate-950">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(20,184,166,0.24),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(59,130,246,0.25),transparent_30%),linear-gradient(135deg,#020617_0%,#0f172a_52%,#111827_100%)]" />
-        <div className="relative mx-auto grid min-h-[520px] max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-[1.05fr_0.95fr] lg:px-8">
-          <div className="animate-rise">
-            <p className="mb-4 inline-flex rounded-full border border-teal-300/30 bg-white/10 px-4 py-2 text-sm font-medium text-teal-100">
-              Trusted specialist appointments, made simple
-            </p>
-            <h1 className="max-w-3xl text-4xl font-bold leading-tight text-white md:text-6xl">
-              Book the right doctor without the waiting-room guesswork.
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-              Browse verified specialists, compare chamber times, and manage appointments from one clean dashboard.
-            </p>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white/90 py-3 shadow-sm shadow-slate-200/20 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 text-sm text-slate-700 md:px-8">
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              'Find Doctor',
+              'Find Hospital',
+              'Find Ambulance',
+              'Login/Register',
+              'Health Checkup & Insurance',
+              'Domiciliary Services',
+              'Diagnostic Home Services',
+              'Get the app',
+              'Support',
+            ].map((item) => (
+              <span key={item} className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </header>
 
-            <div className="mt-8 max-w-2xl rounded-lg bg-white p-2 shadow-2xl shadow-blue-950/30">
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder="Search by doctor name or specialty"
-                  className="min-h-12 flex-1 rounded-md border border-slate-200 px-4 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
-                <button
-                  onClick={handleSearch}
-                  className="min-h-12 rounded-md bg-blue-600 px-6 font-semibold text-white transition hover:bg-blue-700"
-                >
-                  Search
-                </button>
+      <main>
+        <section className="relative overflow-hidden bg-slate-950 text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(148,163,184,0.2),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.18),transparent_28%)]" />
+          <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-[1.1fr_0.9fr] lg:px-8">
+            <div className="flex flex-col justify-center gap-6 py-6">
+              <p className="inline-flex rounded-full border border-emerald-300/30 bg-emerald-500/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-emerald-200">
+                Book a doctor in 10 minutes
+              </p>
+              <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-white md:text-6xl">
+                Book a Doctor&apos;s Appointment in Just 10 Minutes with Sasthya Seba.
+              </h1>
+              <p className="max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
+                Say goodbye to endless phone calls and long queues. Book doctors&apos; appointments, video consultations, ambulance service, manage medical records, and more.
+              </p>
+
+              <div className="grid gap-4 sm:grid-cols-[1.4fr_0.6fr]">
+                <div className="rounded-3xl border border-white/10 bg-white/10 p-3 shadow-xl shadow-slate-950/20">
+                  <div className="flex gap-3">
+                    <input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      placeholder="Search doctors, hospitals, clinics..."
+                      className="w-full rounded-2xl border border-slate-700/60 bg-slate-950/90 px-4 py-3 text-slate-100 outline-none placeholder:text-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
+                    />
+                    <button
+                      onClick={handleSearch}
+                      className="rounded-2xl bg-emerald-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
+                    >
+                      Search
+                    </button>
+                  </div>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {['Video Consultancy', 'Chamber Appointment', 'Doctor At Your Home', 'Ambulance Service', 'Domiciliary Service'].slice(0, 2).map((label) => (
+                    <div key={label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
+                      {label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3 text-sm text-slate-300">
+                <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">Need a Doctor to Visit your Loved One at Home? Dial - 09611 530 530</span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2">Emergency ambulance: 01405600700</span>
               </div>
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              {specialties.slice(0, 4).map((specialty) => (
-                <button
-                  key={specialty}
-                  onClick={() => router.push(`/doctors?specialty=${encodeURIComponent(specialty)}`)}
-                  className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-slate-100 transition hover:border-teal-300 hover:bg-teal-300/10"
-                >
-                  {specialty}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="animate-float hidden md:block">
-            <div className="rounded-lg border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur">
-              <div className="grid gap-4">
-                {doctors.slice(0, 3).map((doctor, index) => (
-                  <Link
-                    href={`/doctors/${doctor.id}`}
-                    key={doctor.id}
-                    className="flex items-center gap-4 rounded-lg bg-white p-4 transition hover:-translate-y-1 hover:shadow-xl"
-                    style={{ animationDelay: `${index * 120}ms` }}
+            <div className="relative overflow-hidden rounded-4xl border border-white/10 bg-slate-900/80 shadow-2xl shadow-slate-950/40">
+              <img
+                src={heroSlides[activeSlide].image}
+                alt={heroSlides[activeSlide].title}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <p className="mb-2 text-sm uppercase tracking-[0.2em] text-emerald-300">Trusted healthcare for every moment</p>
+                <h2 className="text-2xl font-bold text-white md:text-3xl">{heroSlides[activeSlide].title}</h2>
+                <p className="mt-3 max-w-xl text-sm text-slate-200 md:text-base">{heroSlides[activeSlide].description}</p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => router.push('/doctors')}
+                    className="rounded-full bg-emerald-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400"
                   >
-                    <div className="h-16 w-16 overflow-hidden rounded-lg bg-slate-100">
-                      {doctor.image ? (
-                        <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-600">
-                          {doctor.name.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-950">{doctor.name}</p>
-                      <p className="text-sm text-blue-600">{doctor.specialty}</p>
-                      <p className="mt-1 text-xs text-slate-500">{doctor.qualifications || 'Specialist consultant'}</p>
-                    </div>
-                  </Link>
+                    Find Doctor
+                  </button>
+                  <button
+                    onClick={() => router.push('/contact')}
+                    className="rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white transition hover:bg-white/20"
+                  >
+                    Support
+                  </button>
+                </div>
+              </div>
+              <div className="absolute bottom-6 right-6 flex items-center gap-2">
+                {heroSlides.map((_, slideIndex) => (
+                  <button
+                    key={slideIndex}
+                    onClick={() => setActiveSlide(slideIndex)}
+                    className={`h-2.5 w-2.5 rounded-full transition ${activeSlide === slideIndex ? 'bg-emerald-400' : 'bg-white/50'}`}
+                  />
                 ))}
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="border-b border-slate-200 bg-slate-50 px-4 py-8">
-        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3 lg:px-8">
-          {[
-            ['24/7', 'Appointment access'],
-            [doctors.length || '50+', 'Listed specialists'],
-            ['3 steps', 'Search, select, confirm'],
-          ].map(([value, label]) => (
-            <div key={label} className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
-              <p className="text-3xl font-bold text-slate-950">{value}</p>
-              <p className="mt-1 text-slate-600">{label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="px-4 py-16">
-        <div className="mx-auto max-w-7xl lg:px-8">
-          <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <p className="font-semibold text-blue-600">Featured specialists</p>
-              <h2 className="mt-2 text-3xl font-bold text-slate-950">Care teams ready for your next visit</h2>
-            </div>
-            <Link href="/doctors" className="font-semibold text-blue-600 hover:text-blue-700">
-              View all doctors
-            </Link>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {doctors.slice(0, 4).map((doctor) => (
-              <Link
-                href={`/doctors/${doctor.id}`}
-                key={doctor.id}
-                className="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-xl"
-              >
-                <div className="h-52 bg-slate-100">
-                  {doctor.image ? (
-                    <img src={getImageUrl(doctor.image)} alt={doctor.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-blue-600">
-                      {doctor.name.charAt(0)}
-                    </div>
-                  )}
+        <section className="bg-white px-4 py-10 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                ['Health Checkup & Insurance', 'Keep your whole family covered with custom packages.'],
+                ['Domiciliary Services', 'Doctor and nurse visits at home for recovery care.'],
+                ['Diagnostic Home Services', 'Lab sample collection and reports delivered to your door.'],
+                ['Get the app', 'Manage appointments and records from your phone.'],
+              ].map(([title, desc]) => (
+                <div key={title} className="rounded-3xl border border-slate-200 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                  <h3 className="text-xl font-semibold text-slate-950">{title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{desc}</p>
                 </div>
-                <div className="p-5">
-                  <h3 className="font-semibold text-slate-950">{doctor.name}</h3>
-                  <p className="mt-1 text-sm text-blue-600">{doctor.specialty}</p>
-                  <p className="mt-3 text-sm text-slate-500">View profile and available appointment times</p>
-                </div>
-              </Link>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="bg-slate-950 px-4 py-16 text-white">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3 lg:px-8">
-          {[
-            ['Search precisely', 'Use All Doctors to filter specialists by name, specialty, and gender.'],
-            ['Book confidently', 'Choose a chamber, date, and time from each doctor profile.'],
-            ['Manage easily', 'Patients and doctors can track bookings from their dashboards.'],
-          ].map(([title, text], index) => (
-            <div key={title} className="animate-rise rounded-lg border border-white/10 bg-white/5 p-6" style={{ animationDelay: `${index * 120}ms` }}>
-              <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-md bg-teal-400 font-bold text-slate-950">
-                {index + 1}
+        <section className="bg-slate-950 px-4 py-14 text-white sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-300">Consult our top specialized doctors</p>
+                <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">Our doctors are ready to serve you 24/7</h2>
               </div>
-              <h3 className="text-xl font-semibold">{title}</h3>
-              <p className="mt-3 leading-7 text-slate-300">{text}</p>
+              <Link href="/doctors" className="rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+                View all
+              </Link>
             </div>
-          ))}
-        </div>
-      </section>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {['Gynecologist & Obstetrician', 'Medicine Specialist', 'Cardiologist', 'Pediatrician', 'General Surgeon', 'Otolaryngologists (ENT)'].map((specialty) => (
+                <div key={specialty} className="rounded-3xl border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:shadow-xl">
+                  <p className="text-sm uppercase tracking-[0.18em] text-emerald-200">{specialty}</p>
+                  <p className="mt-4 text-lg font-semibold text-white">Consult Now</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="rounded-4xl border border-slate-200 bg-slate-950 p-8 text-white shadow-2xl shadow-slate-950/10">
+              <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.24em] text-emerald-300">Need medical support?</p>
+                  <h3 className="mt-4 text-3xl font-bold">Need a Doctor to Visit your Loved One at Home?</h3>
+                  <p className="mt-4 max-w-xl text-slate-300">Request a home visit and receive care from trusted professionals with medical equipment and follow-up support.</p>
+                </div>
+                <div className="rounded-3xl bg-white/10 p-6 text-center">
+                  <p className="text-sm uppercase tracking-[0.24em] text-emerald-200">Call us now</p>
+                  <p className="mt-3 text-4xl font-bold text-white">09611 530 530</p>
+                  <p className="mt-2 text-sm text-slate-300">Emergency ambulance: 01405600700</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-slate-50 px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-500">Emergency services</p>
+              <h2 className="mt-3 text-3xl font-bold text-slate-950">We are ready to help at your emergency</h2>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              {[
+                ['AC Ambulance', 'Get ambulance within 30 minutes*', '24/7 affordable quality service'],
+                ['ICU Ambulance', 'Get ambulance within 30 minutes*', '24/7 affordable quality service'],
+                ['AIR Ambulance', 'Get ambulance within 60 minutes*', '24/7 affordable quality service'],
+              ].map(([title, subtitle, text]) => (
+                <div key={title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <p className="text-lg font-semibold text-slate-950">{title}</p>
+                  <p className="mt-3 text-sm text-slate-600">{subtitle}</p>
+                  <p className="mt-4 text-sm text-slate-500">{text}</p>
+                  <p className="mt-5 text-sm font-semibold text-emerald-600">Call: 01405600700</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-500">Diagnostic care</p>
+              <h2 className="mt-3 text-3xl font-bold text-slate-950">Get timely, cost-effective, and high quality diagnostic care</h2>
+              <p className="mt-4 text-slate-600">Book tests with top labs, get sample pick up, and share reports with doctors online.</p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {['CT Scan', 'Blood Tests', 'Endoscopy', 'Ultrasound', 'X-Ray', 'Microbiology'].map((label) => (
+                <div key={label} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <p className="text-lg font-semibold text-slate-950">{label}</p>
+                  <p className="mt-3 text-sm text-slate-600">Check Prices</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-slate-950 px-4 py-14 text-white sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+              <div>
+                <p className="text-sm uppercase tracking-[0.24em] text-emerald-300">Mobile App</p>
+                <h2 className="mt-3 text-3xl font-bold text-white">Get all the benefits of Sasthya Seba through our mobile app</h2>
+                <p className="mt-4 max-w-2xl text-slate-300">Book Appointment Online, Video Call With Doctor, Get Prescription Instantly, and manage all your health needs from one app.</p>
+                <div className="mt-6 flex flex-wrap gap-4">
+                  <button className="rounded-full bg-emerald-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-emerald-400">
+                    Get It On Google Play
+                  </button>
+                  <button className="rounded-full border border-white/20 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/20">
+                    Download on the App Store
+                  </button>
+                </div>
+              </div>
+              <div className="grid gap-4">
+                <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+                  <p className="text-base font-semibold text-white">Book Appointment Online</p>
+                  <p className="mt-2 text-sm text-slate-300">Reserve a doctor visit or consultation in just a few taps.</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+                  <p className="text-base font-semibold text-white">Video Call With Doctor</p>
+                  <p className="mt-2 text-sm text-slate-300">Secure online consultations with specialists across Bangladesh.</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+                  <p className="text-base font-semibold text-white">Get Prescription Instantly</p>
+                  <p className="mt-2 text-sm text-slate-300">Receive digital prescriptions after your consultation without delay.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-500">What people love</p>
+              <h2 className="mt-3 text-3xl font-bold text-slate-950">Why people love Sasthya Seba</h2>
+              <p className="mt-4 text-slate-600">We continuously improve our services based on the opinion of our users.</p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[
+                'Very helpful. Far easier than doing same things on computer. Allows quick and easy search with speedy booking. Even maintains history of doctors visited. - Faiyaz-A-Chowdhury',
+                'Dear Fatema, “Thank you so much for your diligent follow up and especially for calling me back. It is very rare that someone from customer support for any company ever reverts. Reaffirms my faith in Sasthya Seba. - Israt-Mou',
+                'The service of Sasthya Seba is praiseworthy. When my grandmother was at critical moment, we were all worried to have a vehicle in that late night. - Labby Ahsan',
+              ].map((quote, index) => (
+                <div key={index} className="rounded-3xl border border-slate-200 p-6 shadow-sm">
+                  <p className="text-sm leading-7 text-slate-700">{quote}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
