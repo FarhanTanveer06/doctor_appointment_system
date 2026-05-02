@@ -35,44 +35,75 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
-              required
-            />
+    <div className="min-h-screen bg-slate-950 text-white">
+      <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-12">
+        <div className="grid w-full gap-10 overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/30 backdrop-blur-xl md:grid-cols-[1.05fr_0.95fr]">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <span className="inline-flex rounded-full bg-emerald-500/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-200">
+                Secure login
+              </span>
+              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">Welcome back to DocAssist</h1>
+              <p className="max-w-2xl text-base leading-7 text-slate-300">
+                Login to manage your appointments, access doctor profiles, and keep your healthcare journey on track.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                ['Fast access', 'Sign in quickly and continue where you left off.'],
+                ['Secure data', 'Your health information is protected with every step.'],
+              ].map(([title, description]) => (
+                <div key={title} className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                  <h2 className="text-lg font-semibold text-white">{title}</h2>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">{description}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
-              required
-            />
+
+          <div className="rounded-[2rem] bg-slate-950/95 p-8 shadow-inner shadow-slate-950/30 ring-1 ring-white/10">
+            <div className="mb-8 text-center">
+              <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">Sign in</p>
+              <h2 className="mt-4 text-3xl font-semibold text-white">Login to your account</h2>
+              <p className="mt-2 text-sm text-slate-400">Patients and doctors can sign in here.</p>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-slate-200">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-200">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-3xl bg-emerald-500 px-4 py-3 text-base font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? 'Logging in...' : 'Login'}
+              </button>
+            </form>
+            <p className="mt-6 text-center text-sm text-slate-400">
+              Don&apos;t have an account?{' '}
+              <Link href="/register" className="font-semibold text-emerald-300 hover:text-emerald-100">
+                Create one now
+              </Link>
+            </p>
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-        <p className="mt-4 text-center text-gray-600">
-          Don't have an account?{' '}
-          <Link href="/register" className="text-blue-600 hover:underline">
-            Register
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

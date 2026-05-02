@@ -56,6 +56,21 @@ export default function Home() {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    // Handle scrolling to sections when page loads with hash
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        setTimeout(() => {
+          const element = document.getElementById(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100); // Small delay to ensure DOM is ready
+      }
+    }
+  }, []);
+
   const fetchDoctors = async () => {
     try {
       const res = await api.get('/doctors');
@@ -107,7 +122,7 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="relative overflow-hidden bg-slate-950 text-white">
+        <section id="home" className="relative overflow-hidden bg-slate-950 text-white">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(148,163,184,0.2),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.18),transparent_28%)]" />
           <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-[1.1fr_0.9fr] lg:px-8">
             <div className="flex flex-col justify-center gap-6 py-6">
@@ -348,6 +363,80 @@ export default function Home() {
                   <p className="text-sm leading-7 text-slate-700">{quote}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className="bg-slate-950 px-4 py-14 text-white sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 text-center">
+              <p className="text-sm uppercase tracking-[0.24em] text-emerald-300">About DocAssist</p>
+              <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">Your trusted healthcare platform</h2>
+            </div>
+            <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+              <div>
+                <p className="text-lg leading-8 text-slate-300">
+                  Welcome to DocAssist - your trusted platform for booking appointments with qualified healthcare professionals. We connect patients with doctors across various specialties including General Physicians, Dermatologists, Pediatricians, Neurologists, Gastroenterologists, and Cardiologists.
+                </p>
+                <h3 className="mt-6 text-xl font-semibold text-white">Our Mission</h3>
+                <p className="mt-3 text-lg leading-8 text-slate-300">
+                  To provide easy access to quality healthcare by enabling seamless appointment booking between patients and doctors.
+                </p>
+                <h3 className="mt-6 text-xl font-semibold text-white">Why Choose Us?</h3>
+                <ul className="mt-3 space-y-2 text-lg text-slate-300">
+                  <li>• Wide network of specialist doctors</li>
+                  <li>• Easy online booking</li>
+                  <li>• Real-time appointment confirmations</li>
+                  <li>• Secure and confidential</li>
+                  <li>• 24/7 availability</li>
+                </ul>
+              </div>
+              <div className="grid gap-4">
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <p className="text-base font-semibold text-white">Wide Network</p>
+                  <p className="mt-2 text-sm text-slate-300">Access to specialists across all major medical fields.</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <p className="text-base font-semibold text-white">Easy Booking</p>
+                  <p className="mt-2 text-sm text-slate-300">Book appointments in just a few clicks.</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <p className="text-base font-semibold text-white">Secure Platform</p>
+                  <p className="mt-2 text-sm text-slate-300">Your health data is protected and confidential.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="bg-white px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-500">Get in touch</p>
+              <h2 className="mt-3 text-3xl font-bold text-slate-950">Contact Us</h2>
+              <p className="mt-4 text-slate-600">Have questions or need help? We're here to assist you.</p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center">
+                <div className="text-3xl mb-4">📍</div>
+                <h3 className="font-semibold text-slate-950">Address</h3>
+                <p className="mt-2 text-sm text-slate-600">Suvastu Chirontoni, 26 Indira Road, Farmgate</p>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center">
+                <div className="text-3xl mb-4">📞</div>
+                <h3 className="font-semibold text-slate-950">Phone</h3>
+                <p className="mt-2 text-sm text-slate-600">01636656861</p>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center">
+                <div className="text-3xl mb-4">✉️</div>
+                <h3 className="font-semibold text-slate-950">Email</h3>
+                <p className="mt-2 text-sm text-slate-600">farhansarkar10130@gmail.com</p>
+              </div>
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center">
+                <div className="text-3xl mb-4">⏰</div>
+                <h3 className="font-semibold text-slate-950">Hours</h3>
+                <p className="mt-2 text-sm text-slate-600">Mon-Fri: 9AM-6PM<br />Sat: 10AM-4PM</p>
+              </div>
             </div>
           </div>
         </section>
