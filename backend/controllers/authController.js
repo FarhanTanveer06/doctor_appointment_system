@@ -36,7 +36,7 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.error('Register error:', error.message, error.stack);
-    res.status(500).json({ message: 'Server error: ' + error.message });
+    res.status(500).json({ message: 'Server error: due to hosting limit, please try again later' + error.message });
   }
 };
 
@@ -63,7 +63,7 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error due to database hosting limit' });
   }
 };
 
